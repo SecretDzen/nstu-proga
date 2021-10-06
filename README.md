@@ -7,11 +7,22 @@
 Тема: Файловые операции WinAPI  
 Задание: Удалить из текста все пробелы  
 Параметры входной строки: Имя входного файла, количество замен  
-Запуск программы: 
+Запуск программы c Makefile: 
+```  
+make lab_1 
+make play1
+```  
+
+Запуск программы без Makefile:  
 ```
 cd lab1  
-gcc main.c -o lab1  
-./lab1 in.txt 5  
+gcc -Wall -Wextra -Werror main.c -lm -o ./frog.exe
+./frog.exe ./input.txt 4
+```  
+
+Очистка репозитория с Makefile:  
+```
+make clean  
 ```  
 
 ## Лабораторная работа №2
