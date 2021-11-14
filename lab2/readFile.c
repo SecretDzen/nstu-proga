@@ -5,14 +5,16 @@
 #include <errno.h>
 #include <fcntl.h>
 
-int readFile(const char *fp, char *str) {
+#define BUF_SIZE 256
+
+int readFile(const char *fp, char str[BUF_SIZE]) {
   int inputFd, charNums = 0;
   char buf;
   inputFd = open(fp, O_RDONLY);
 
   if (inputFd < 0) {
     printf("Error %d (%s) while open file: %s!\n",errno, strerror(errno), fp);
-    exit(-2);
+    exit(-1);
   }
 
   while (read(inputFd, &buf, 1) > 0) {

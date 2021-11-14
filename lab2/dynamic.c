@@ -11,7 +11,7 @@
 int main(int argc, char *argv[]) {
   int outputFd, openFlags;
   mode_t filePerms;
-  char str[SIZE], newStr[SIZE];
+  char str[SIZE] = {0}, newStr[SIZE] = {0};
 
   if (argc != 3) {
     printf("To use this programm: <prog_name> <file_name> <spaces_to_delete>\n");
@@ -31,12 +31,12 @@ int main(int argc, char *argv[]) {
 
   if (readFile == NULL) {
     printf("Wild Library Connection Error appeared! Error: %s\n", dlerror());
-    exit(-2);
+    exit(-1);
   }
 
   int charNums = readFile(argv[1], str);
   int spaces = 0;
-  int toDelete = (int) *argv[2] - 48;
+  int toDelete = atoi(argv[2]);
 
   if (toDelete < 0) {
     printf("Expected positive number of spaces\n");
@@ -48,21 +48,22 @@ int main(int argc, char *argv[]) {
     else newStr[i - spaces] = str[i];
   }
 
-  newStr[charNums - spaces] = '\0';
   openFlags = O_CREAT | O_WRONLY | O_TRUNC;
   filePerms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
   outputFd = open("./build/lab2.text", openFlags, filePerms);
   if (outputFd == -1) {
     printf ("Error opening file %s\n ", "./build/lab2.text"); 
-    exit(-3);
+    exit(-1);
   }
 
-  if(!write(outputFd, newStr, strlen(newStr))) {
-    printf("Wild Error Appear!");
+  if(write(outputFd, newStr, strlen(newStr)) <= 0) {
+    printf("Wild Error Appear!\nError: %d - %s\n", errno, strerror(errno));
+    close(outputFd);
+    exit(-1);
   }
 
-  close (outputFd);
+  close(outputFd);
   printf("Program Done Sucessfully");
   return 0;
 }
