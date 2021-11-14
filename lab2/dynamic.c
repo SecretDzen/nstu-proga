@@ -4,35 +4,37 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <dlfcn.h>
 
 #define SIZE 256
 
 int main(int argc, char *argv[]) {
-  int inputFd, outputFd, openFlags;
+  int outputFd, openFlags;
   mode_t filePerms;
-  char buf, str[SIZE], newStr[SIZE];
+  char str[SIZE], newStr[SIZE];
 
   if (argc != 3) {
     printf("To use this programm: <prog_name> <file_name> <spaces_to_delete>\n");
     exit(-1);
   }
 
-  inputFd = open(argv[1], O_RDONLY);
+  void *dl_hander;
+  int (* readFile)(const char *fp, char *str);
+  dl_hander = dlopen("lab2/libreadFile.so", RTLD_LAZY);
 
-  if (inputFd < 0) {
-    printf("Error %d (%s) while open file: %s!\n",errno, strerror(errno), argv[1]);
+  if(!dl_hander) {
+    printf("Wild Library Open Error appeared!\nError: %s\n", dlerror());
+    exit(-1);
+  }
+
+  readFile = dlsym(dl_hander, "readFile");
+
+  if (readFile == NULL) {
+    printf("Wild Library Connection Error appeared! Error: %s\n", dlerror());
     exit(-2);
   }
 
-  int charNums = 0;
-
-  while (read(inputFd, &buf, 1) > 0) {
-    str[charNums] = buf;
-    charNums++;
-  }
-
-  close(inputFd);
-
+  int charNums = readFile(argv[1], str);
   int spaces = 0;
   int toDelete = (int) *argv[2] - 48;
 
@@ -45,17 +47,14 @@ int main(int argc, char *argv[]) {
     if (str[i] == ' ' && spaces < toDelete) spaces++;
     else newStr[i - spaces] = str[i];
   }
+
   newStr[charNums - spaces] = '\0';
-    
-    
   openFlags = O_CREAT | O_WRONLY | O_TRUNC;
   filePerms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
-
-  outputFd = open("./build/lab1.text", openFlags, filePerms);
-
+  outputFd = open("./build/lab2.text", openFlags, filePerms);
   if (outputFd == -1) {
-    printf ("Error opening file %s\n ", "./build/lab1.text"); 
+    printf ("Error opening file %s\n ", "./build/lab2.text"); 
     exit(-3);
   }
 
@@ -65,6 +64,5 @@ int main(int argc, char *argv[]) {
 
   close (outputFd);
   printf("Program Done Sucessfully");
-
   return 0;
 }
