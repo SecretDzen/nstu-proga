@@ -12,8 +12,19 @@ int main(int argc, char *argv[]) {
   int outputFd, openFlags;
   mode_t filePerms;
   char str[SIZE] = {0}, newStr[SIZE] = {0};
+  char ch, fileName[SIZE] = {0};
+  char fileName2[SIZE] = {0};
+
+  strcpy(fileName, argv[1]);
+  ch = fileName[strlen(fileName) - 5];
 
   if (argc != 3) {
+    printf("Your entered:\n");
+
+    for (int i = 0; i < argc; i++) {
+      printf("\tARGV[%d]: %s\n", i, argv[i]);
+    }
+
     printf("To use this programm: <prog_name> <file_name> <spaces_to_delete>\n");
     exit(-1);
   }
@@ -51,9 +62,11 @@ int main(int argc, char *argv[]) {
   openFlags = O_CREAT | O_WRONLY | O_TRUNC;
   filePerms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
 
-  outputFd = open("./build/lab2.text", openFlags, filePerms);
+  sprintf(fileName2, "./build/input%c.text", ch);
+  outputFd = open(fileName2, openFlags, filePerms);
+
   if (outputFd == -1) {
-    printf ("Error opening file %s\n ", "./build/lab2.text"); 
+    printf ("Error opening file %s\n ", fileName2); 
     exit(-1);
   }
 
@@ -64,6 +77,6 @@ int main(int argc, char *argv[]) {
   }
 
   close(outputFd);
-  printf("Program Done Sucessfully");
+  printf("Program Done Sucessfully\n");
   return 0;
 }

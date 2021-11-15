@@ -42,11 +42,12 @@ $(LAB_2s):
 	$(CC) $(CFLAGS) $(PATH_2)$(STATIC) -lm -L$(PATH_2) -lreadFile -o $(B_PATH)$(LAB_2s)
 	$(B_PATH)$(LAB_2s) $(PATH_2)input.txt 4
 
-$(LAB_2d):
+$(LAB_2d): clean
 	$(CC) -fPIC -c $(PATH_2)readFile.c -o $(PATH_2)readFile.o
 	$(CC) -shared -o $(PATH_2)libreadFile.so $(PATH_2)readFile.o
 	$(CC) $(CFLAGS) $(PATH_2)$(DYNAMIC) -ldl -o $(B_PATH)$(LAB_2d)
-	$(B_PATH)$(LAB_2d) $(PATH_2)input.txt 4
+	$(B_PATH)$(LAB_2d) $(PATH_2)input1.txt 4
 
 $(LAB_3):
-	
+	$(CC) $(CFLAGS) $(PATH_3)$(MAIN) -o $(B_PATH)$(LAB_3)
+	$(B_PATH)$(LAB_3) ./lab3/input1.txt $(PATH_3)input2.txt 4
