@@ -52,7 +52,7 @@ make clean
 Тема: Многозадачное программирование в Linux  
 Запуск программы с помощью Makefile: 
 ```  
-make lab_2s  
+make lab_2d  
 make lab_3
 ```  
 Очистка репозитория с Makefile:  
