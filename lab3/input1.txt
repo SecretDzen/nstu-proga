@@ -1,1 +1,2 @@
 t h i s i s C
+LD_LIBRARY_PATH=~/secretdzen/univer/nstu-proga/lab2/

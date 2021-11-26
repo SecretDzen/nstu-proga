@@ -17,7 +17,12 @@ PATH_2=./lab2/
 LAB_3=lab_3
 PATH_3=./lab3/
 
-all: $(LAB_1) clean $(LAB_2s) clean $(LAB_2d) clean $(LAB_3)
+LAB_4=lab_4
+LAB_4s=lab_4s
+LAB_4c=lab_4c
+PATH_4=./lab4/
+
+all: $(LAB_1) clean $(LAB_2s) clean $(LAB_2d) $(LAB_3) $(LAB_4s)
 
 clean:
 	rm -rf $(B_PATH)lab_*
@@ -48,6 +53,16 @@ $(LAB_2d): clean
 	$(CC) $(CFLAGS) $(PATH_2)$(DYNAMIC) -ldl -o $(B_PATH)$(LAB_2d)
 	$(B_PATH)$(LAB_2d) $(PATH_2)input1.txt 4
 
-$(LAB_3):
+$(LAB_3): $(LAB_2d)
 	$(CC) $(CFLAGS) $(PATH_3)$(MAIN) -o $(B_PATH)$(LAB_3)
-	$(B_PATH)$(LAB_3) ./lab3/input1.txt $(PATH_3)input2.txt 4
+	$(B_PATH)$(LAB_3) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
+
+$(LAB_4): $(LAB_2d)
+	$(CC) $(CFLAGS) $(PATH_4)server.c -o $(B_PATH)$(LAB_4s)
+	$(CC) $(CFLAGS) $(PATH_4)client.c -o $(B_PATH)$(LAB_4c)
+
+server:
+	$(B_PATH)$(LAB_4s)
+
+client:
+	$(B_PATH)$(LAB_4c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
