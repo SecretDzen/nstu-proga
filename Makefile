@@ -22,6 +22,11 @@ LAB_4s=lab_4s
 LAB_4c=lab_4c
 PATH_4=./lab4/
 
+LAB_5=lab_5
+LAB_5s=lab_5s
+LAB_5c=lab_5c
+PATH_5=./lab5/
+
 all: $(LAB_1) clean $(LAB_2s) clean $(LAB_2d) $(LAB_3) $(LAB_4s)
 
 clean:
@@ -66,3 +71,13 @@ server:
 
 client:
 	$(B_PATH)$(LAB_4c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
+
+$(LAB_5): $(LAB_2d)
+	$(CC) $(CFLAGS) -L. -lrt $(PATH_5)server.c -o $(B_PATH)$(LAB_5s)
+	$(CC) $(CFLAGS) -L. -lrt $(PATH_5)client.c -o $(B_PATH)$(LAB_5c)
+
+server5:
+	$(B_PATH)$(LAB_5s)
+
+client5:
+	$(B_PATH)$(LAB_5c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
