@@ -1,71 +1,71 @@
 #include <errno.h>
-#include <mqueue.h>
+#include <semaphore.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #define LAB2_PATH "./build/lab_2d"
 #define LAB2_NAME "lab_2d"
-#define QUEUE_TOSERVER "/to_server"
-#define QUEUE_TOCLIENT "/to_client"
-#define MAX_SIZE 1024
-#define RES_LEN 64
+#define SEM_NAME "/mysem"
+#define SEM_TOCLI "/tocli"
+#define SEM_TOSERV "/toserv"
 #define MSG_STOP "exit"
 #define MAX_FILES 10
+#define SHM_SIZE 64
 
 void check(int x, int y);
 
 int main() {
-  mqd_t mq;
-  struct mq_attr attr;
+  int sem_d = 0;
   int must_stop = 0;
   int count = 0;
 
-  /* initialize the queue attributes */
-  attr.mq_flags = 0;
-  attr.mq_maxmsg = 10;
-  attr.mq_msgsize = MAX_SIZE;
-  attr.mq_curmsgs = 0;
-
   char **files = calloc(MAX_FILES, sizeof(char *));
 
-  /* create the message queue */
-  mq = mq_open(QUEUE_TOSERVER, O_CREAT | O_RDONLY, 0666, &attr);
-  check(mq, -1);
+  char *shm = NULL;
+  sem_t *toclient = NULL;
+  sem_t *toserver = NULL;
+
+  sem_d = shm_open(SEM_NAME, O_RDWR | O_CREAT, 0666);
+  check(sem_d, -1);
+
+  shm = mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, sem_d, 0);
+  if (shm == MAP_FAILED) {
+    printf("%s", strerror(errno));
+    exit(-1);
+  }
+
+  toclient = sem_open(SEM_TOCLI, O_RDWR | O_CREAT, 0666, 1);
+  toserver = sem_open(SEM_TOSERV, O_RDWR | O_CREAT, 0666, 1);
 
   do {
-    ssize_t bytes_read;
-    char *buffer = calloc(attr.mq_msgsize, sizeof(char *));
+    sem_post(toclient);
+    sem_wait(toserver);
+    size_t len = strlen(shm);
+    char *buffer = calloc(len, sizeof(char *));
 
-    /* receive the message */
-    bytes_read = mq_receive(mq, buffer, MAX_SIZE, NULL);
-    if (bytes_read <= 0) {
+    if (len <= 0) {
       printf("Read error");
       exit(-1);
     }
 
-    buffer[bytes_read] = '\0';
-
+    buffer = strncpy(buffer, shm, len + 1);
+    printf("BUFFER IS: %s\n", buffer);
     if (!strcmp(buffer, MSG_STOP)) {
       must_stop = 1;
       free(buffer);
+
     } else {
       printf("Received from client: %s\n", buffer);
       files[count++] = buffer;
     }
   } while (!must_stop);
-
-  /* cleanup */
-  mqd_t close = mq_close(mq);
-  check(close, -1);
-
-  /* create the message queue */
-  mq = mq_open(QUEUE_TOCLIENT, O_CREAT | O_WRONLY, 0666, &attr);
-  check(mq, -1);
 
   pid_t pid = 0;
   int status = 0;
@@ -83,20 +83,21 @@ int main() {
         char result_status[128];
         sprintf(result_status, "File %s done with %s spaces", files[num],
                 files[count - 1]);
-        int mqs = mq_send(mq, result_status, strlen(result_status), 0);
-        check(mqs, -1);
+
+        check(sem_wait(toserver), -1);
+
+        size_t len = strlen(result_status);
+
+        memcpy(shm, result_status, len + 1);
+        check(msync(shm, len, PROT_READ | PROT_WRITE), -1);
+        check(sem_post(toclient), -1);
       }
     }
   }
 
-  /* cleanup */
-  mqd_t close2 = mq_close(mq);
-  check(close2, -1);
+  check(close(sem_d), -1);
+  check(sem_unlink(SEM_NAME), -1);
 
-  mqd_t unlink = mq_unlink(QUEUE_TOSERVER);
-  check(unlink, -1);
-
-  /* free buffer */
   for (int num = 0; num < MAX_FILES; num++) free(files[num]);
   free(files);
 

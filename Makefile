@@ -27,6 +27,11 @@ LAB_5s=lab_5s
 LAB_5c=lab_5c
 PATH_5=./lab5/
 
+LAB_6=lab_6
+LAB_6s=lab_6s
+LAB_6c=lab_6c
+PATH_6=./lab6/
+
 all: $(LAB_1) clean $(LAB_2s) clean $(LAB_2d) $(LAB_3) $(LAB_4s)
 
 clean:
@@ -81,3 +86,13 @@ server5:
 
 client5:
 	$(B_PATH)$(LAB_5c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
+
+$(LAB_6): $(LAB_2d)
+	$(CC) $(CFLAGS) -L. -lpthread -lrt $(PATH_6)server.c -o $(B_PATH)$(LAB_6s)
+	$(CC) $(CFLAGS) -L. -lpthread -lrt $(PATH_6)client.c -o $(B_PATH)$(LAB_6c)
+
+server6:
+	$(B_PATH)$(LAB_6s)
+
+client6:
+	$(B_PATH)$(LAB_6c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4

@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
     check(mqr, -1);
 
     printf("Recieved from server: %s\n", buf);
-
     free(buf);
   }
 
