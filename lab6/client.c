@@ -35,21 +35,18 @@ int main(int argc, char *argv[]) {
   check(close(sem_d), -1);
 
   if (sem_m == MAP_FAILED) {
-    printf("SEM_M: %s", strerror(errno));
     exit(-1);
   }
 
-  toclient = sem_open(SEM_TOCLI, O_CREAT | O_RDWR, 0);
-  toserver = sem_open(SEM_TOSERV, O_CREAT | O_RDWR, 0);
+  toclient = sem_open(SEM_TOCLI, O_CREAT | O_RDONLY, 0);
+  toserver = sem_open(SEM_TOSERV, O_CREAT | O_WRONLY, 0);
 
   for (int num = 1; num <= argc; num++) {
     char *msg = ((num == argc) ? MSG_STOP : argv[num]);
     size_t len = strlen(msg);
-    printf("MSG: %s\n", msg);
 
     check(sem_wait(toclient), -1);
     memcpy(sem_m, msg, len + 1);
-    printf("SEM_M: %s\n", sem_m);
 
     check(msync(sem_m, len, PROT_READ | PROT_WRITE), -1);
     check(sem_post(toserver), -1);
@@ -62,8 +59,13 @@ int main(int argc, char *argv[]) {
   }
 
   check(sem_close(toserver), -1);
+  check(sem_unlink(SEM_TOSERV), -1);
+
   check(sem_close(toclient), -1);
-  check(munmap(sem_m, SHM_SIZE), -1);
+  check(sem_unlink(SEM_TOCLI), -1);
+
+  check(close(sem_d), -1);
+  check(sem_unlink(SEM_NAME), -1);
 
   return 0;
 }

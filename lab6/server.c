@@ -41,8 +41,8 @@ int main() {
     exit(-1);
   }
 
-  toclient = sem_open(SEM_TOCLI, O_RDWR | O_CREAT, 0666, 1);
-  toserver = sem_open(SEM_TOSERV, O_RDWR | O_CREAT, 0666, 1);
+  toclient = sem_open(SEM_TOCLI, O_RDONLY | O_CREAT, 0666, 0);
+  toserver = sem_open(SEM_TOSERV, O_WRONLY | O_CREAT, 0666, 0);
 
   do {
     sem_post(toclient);
@@ -55,8 +55,7 @@ int main() {
       exit(-1);
     }
 
-    buffer = strncpy(buffer, shm, len + 1);
-    printf("BUFFER IS: %s\n", buffer);
+    buffer = strncpy(buffer, shm, len);
     if (!strcmp(buffer, MSG_STOP)) {
       must_stop = 1;
       free(buffer);
@@ -69,6 +68,7 @@ int main() {
 
   pid_t pid = 0;
   int status = 0;
+  printf("COUNT: %d\n", count);
 
   for (int num = 0; num < count - 1; num++) {
     pid = fork();
@@ -88,13 +88,20 @@ int main() {
 
         size_t len = strlen(result_status);
 
-        memcpy(shm, result_status, len + 1);
+        memcpy(shm, result_status, len);
         check(msync(shm, len, PROT_READ | PROT_WRITE), -1);
         check(sem_post(toclient), -1);
       }
     }
   }
 
+  check(sem_close(toserver), -1);
+  check(sem_unlink(SEM_TOSERV), -1);
+
+  check(sem_close(toclient), -1);
+  check(sem_unlink(SEM_TOCLI), -1);
+
+  
   check(close(sem_d), -1);
   check(sem_unlink(SEM_NAME), -1);
 
