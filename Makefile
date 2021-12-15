@@ -96,3 +96,17 @@ server6:
 
 client6:
 	$(B_PATH)$(LAB_6c) $(PATH_3)input1.txt $(PATH_3)input2.txt 4
+
+lab_7: $(LAB_2d)
+	gcc $(CFLAGS) lab7/main.c -ldl -pthread -o build/lab_7
+	./build/lab_7 $(PATH_3)input1.txt $(PATH_3)input2.txt 8
+
+pack_8:
+	gcc $(CFLAGS) lab8/server.c -o build/server
+	gcc $(CFLAGS) lab8/client.c -o build/client
+
+cli_8:
+	./build/client $(PATH_3)input1.txt $(PATH_3)input2.txt 6
+
+serv_8:
+	./build/server
