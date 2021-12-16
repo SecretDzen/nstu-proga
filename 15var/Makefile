@@ -1,3 +1,5 @@
+CFLAGS=-Wall -Wextra -Werror
+
 clean:
 	rm -rf *.out
 	rm -rf *.o
@@ -57,3 +59,16 @@ serv06:
 cli06:
 	./cli_06 ex1.txt ex2.txt 6
 
+lab7:
+	gcc $(CFLAGS) lab07.c -ldl -pthread -o lab_7
+	./lab_7 ex1.txt ex2.txt 8
+
+lab8:
+	gcc $(CFLAGS) lab08serv.c -o serv
+	gcc $(CFLAGS) lab08cli.c -o cli
+
+cli_8:
+	./cli ex1.txt ex2.txt 8
+
+serv_8:
+	./serv
