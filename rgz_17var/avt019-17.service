@@ -1,0 +1,14 @@
+[Unit]
+    Description=avt019 v17 Popov Server
+
+[Service]
+    User=root
+    Group=root
+    Type=forking
+    Restart=always
+    RuntimeMaxSec=300
+    ExecStart=/root/rgz_17var/server
+    WorkingDirectory=/root/rgz_17var/
+
+[Install]
+    WantedBy=multi-user.target
