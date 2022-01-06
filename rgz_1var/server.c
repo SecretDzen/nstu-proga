@@ -99,6 +99,4 @@ void server_start() {
 
   for (int num = 0; num < MAX_FILES; num++) free(files[num]);
   free(files);
-
-  return 0;
 }
