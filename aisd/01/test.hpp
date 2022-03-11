@@ -3,34 +3,38 @@ using namespace std;
 
 template <class T>
 class TestClass {
+ public:
   struct Node {
+   public:
+    Node(T _val) : val(_val), next(nullptr) {}
+
+   private:
     T val;
     Node* next;
-
-    Node(T _val) : val(_val), next(nullptr) {}
-  }
+  };
 
   struct List {
-    Node* first;
-    Node* last;
+   public:
+    List() : head(nullptr), tail(nullptr), size(0) {}
 
-    List() : first(nullptr), last(nullptr) {}
-  }
+   private:
+    Node* head;
+    Node* tail;
+    int size;
+  };
 
-  bool
-  is_empty() {
-    return first == nullptr;
-  }
+  bool is_empty() { return head == nullptr; }
 
   void push_back(T _val) {
     Node* p = new Node(_val);
+    size++;
 
     if (is_empty()) {
-      first = p;
-      last = p;
+      head = p;
+      tail = p;
     } else {
-      last->next = p;
-      last = p;
+      tail->next = head;
+      tail = p;
     }
   }
 

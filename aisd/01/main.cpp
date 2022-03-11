@@ -11,7 +11,11 @@ int main() {
   }
   */
 
-	
+	TestClass<int> craft;
+  craft.print();
+  craft.push_back(1);
+  craft.push_back(2);
+  craft.print();
 
   return 0;
 }
