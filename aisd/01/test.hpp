@@ -7,43 +7,33 @@ class TestClass {
   struct Node {
    public:
     Node(T _val) : val(_val), next(nullptr) {}
+    Node(T _val, Node* _next) : val(_val), next(_next) {}
 
-   private:
     T val;
     Node* next;
   };
 
-  struct List {
+  struct Iterator {
    public:
-    List() : head(nullptr), tail(nullptr), size(0) {}
+    Iterator(Node* _node) : m_node(_node) {}
 
-   private:
-    Node* head;
-    Node* tail;
-    int size;
+    Node* m_node;
   };
 
   bool is_empty() { return head == nullptr; }
 
   void push_back(T _val) {
-    Node* p = new Node(_val);
     size++;
 
     if (is_empty()) {
-      head = p;
-      tail = p;
+      head = tail = new Node(_val);
     } else {
-      tail->next = head;
-      tail = p;
+      tail = new Node(_val, head);
     }
   }
 
-  void print() {
-    bool flag = is_empty();
-    while (p && flag) {
-      cout << p->val << " ";
-      p = p->next;
-    }
-    cout << endl;
-  }
+ private:
+  Node* head = nullptr;
+  Node* tail = nullptr;
+  int size = 0;
 };
