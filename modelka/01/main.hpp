@@ -14,5 +14,5 @@ struct SMO {
   int T_curr_work = 0;
 };
 
-int do_work(SMO *PC, int T_recieve);
+void do_work(SMO *PC, int T_recieve);
 void set_work(SMO *PC, int T_proccess, int total, int queue);
