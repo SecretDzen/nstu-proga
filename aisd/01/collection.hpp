@@ -7,7 +7,6 @@ class Collection {
   struct Node {
     friend class Collection;
 
-   public:
     Node() {}
     Node(T _val) : val(_val), next(nullptr) {}
     Node(T _val, Node* _next) : val(_val), next(_next) {}
@@ -20,7 +19,6 @@ class Collection {
   struct Iterator {
     friend class Collection;
 
-   public:
     Iterator(Node* _node) : m_node(_node) {}
 
     T& operator*() { return m_node->val; }
@@ -174,22 +172,36 @@ class Collection {
 
   void pop_front() {
     if (size == 0) return;
-    head = head->next;
-    border->next = head;
-    size--;
+
+    if (size == 1) {
+      tail = head = nullptr;
+      border = new Node();
+      border->next = head;
+      size = 0;
+    } else {
+      head = head->next;
+      border->next = head;
+      size--;
+    }
   }
 
   void pop_back() {
     if (size == 0) return;
 
-    auto prev_elem = get_prev_elem(find_tail());
-    tail = prev_elem.m_node;
-    tail->next = border;
-
-    size--;
+    if (size == 1) {
+      tail = head = nullptr;
+      border = new Node();
+      border->next = head;
+      size = 0;
+    } else {
+      auto prev_elem = get_prev_elem(find_tail());
+      tail = prev_elem.m_node;
+      tail->next = border;
+      size--;
+    }
   }
 
-  int get_size() { return size; }
+  int get_size() const { return size; }
 
   void clear() {
     if (size == 0) return;
