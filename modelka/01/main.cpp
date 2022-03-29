@@ -11,6 +11,7 @@ int main() {
     int total_recieve = 0;
     int total_proccess = 0;
     int queue = 0;
+    if (expr % 2) sleep(1);
 
     for (int i = 0; i < 1000; i++) {
       queue++;
@@ -50,8 +51,10 @@ int main() {
 
   cout << "Average waiting time: " << P_total_wait / 100.0 << "s" << endl;
   cout << "Average time of task in sys: " << P_in_sys / 100.0 << "s" << endl;
-  cout << "Probability of downtime PC1: " << P_PC1_downtime / 100.0 << "%" << endl;
-  cout << "Probability of downtime PC2: " << P_PC2_downtime / 100.0 << "%" << endl;
+  cout << "Probability of downtime PC1: " << P_PC1_downtime / 100.0 << "%"
+       << endl;
+  cout << "Probability of downtime PC2: " << P_PC2_downtime / 100.0 << "%"
+       << endl;
 
   return 0;
 }
