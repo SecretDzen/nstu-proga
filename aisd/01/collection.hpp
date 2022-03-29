@@ -105,11 +105,12 @@ class Collection {
       return end();
     }
 
+    auto to_del = pos.m_node;
     Node* nextOne = pos.m_node->next;
-
     auto prev_elem = get_prev_elem(pos);
     prev_elem.m_node->next = nextOne;
 
+    delete(to_del);
     size--;
 
     return Iterator(nextOne);
@@ -117,7 +118,7 @@ class Collection {
 
   Iterator get_prev_elem(Iterator pos) {
     auto prev_elem = begin();
-    for (auto it = begin(); it != pos; it++) prev_elem = it;
+    for (auto it = begin(); it != end() && it != pos; it++) prev_elem = it;
     return prev_elem;
   }
 

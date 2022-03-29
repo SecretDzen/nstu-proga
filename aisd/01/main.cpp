@@ -31,7 +31,6 @@ void menu() {
     system("clear");
     get_menu_opt(choise);
     sleep(1);
-
   } while (choise);
 }
 
@@ -124,7 +123,6 @@ void print_coll_menu() {
   cout << "4) Delete Node (from end)" << endl;
   cout << "5) Insert Node" << endl;
   cout << "6) Erase Node (by num)" << endl;
-  cout << "7) Erase Node (by pos)" << endl;
   cout << "0) Stop working with Collection" << endl;
 }
 
@@ -153,10 +151,6 @@ void get_coll_menu_opt(int choise, Collection<int>* coll) {
 
     case 6:
       del_Node(coll, 2);
-      break;
-
-    case 7:
-      del_Node(coll, 3);
       break;
 
     case 0:
@@ -198,12 +192,6 @@ void del_Node(Collection<int>* coll, int param) {
     int val = 0;
     val = get_option(val);
     coll->erase(val);
-  } else if (param == 3) {
-    cout << "===Choose place to delete===" << endl;
-    int place = 0;
-    place = get_option(place);
-    auto it = coll->find(place);
-    coll->erase(it);
   } else {
     coll->pop_back();
   }
