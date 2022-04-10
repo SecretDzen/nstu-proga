@@ -8,15 +8,10 @@ int main() {
 
   for (int i = 100, j = 0; j < SIZE_M; i += 100, j++) {
     matrix_t A = s21_create_matrix(i, i);
-
-    for (int i = 0; i < A.rows; i++) {
-      for (int j = 0; j < A.columns; j++) {
-        A.matrix[i][j] = rand() % 100 + 1;
-      }
-    }
+    fill_rand(&A);
 
     clock_t start_time = clock();
-    double det = get_det(&A);
+    get_det(&A);
     double end_time = (clock() - start_time) / 1000000.0;
 
     B.matrix[j][0] = i;
@@ -32,17 +27,21 @@ int main() {
 }
 
 void save_to_file(matrix_t A) {
-  time_t times = time(NULL);
-  struct tm *ptr = localtime(&times);
-  char *name = asctime(ptr);
-
-  FILE *fp = fopen(name, "w");
+  FILE *fp = fopen("build/data.txt", "w");
 
   for (int i = 0; i < SIZE_M; i++) {
-    fprintf(fp, "%.2f %.2f\n", A.matrix[i][0], A.matrix[i][1]);
+    fprintf(fp, "%.1f %.3f\n", A.matrix[i][0], A.matrix[i][1]);
   }
 
   fclose(fp);
+}
+
+void fill_rand(matrix_t *A) {
+  for (int i = 0; i < A->rows; i++) {
+    for (int j = 0; j < A->columns; j++) {
+      A->matrix[i][j] = rand() % 100 + 1;
+    }
+  }
 }
 
 double get_det(matrix_t *A) {
@@ -86,11 +85,9 @@ int gauss_elim(matrix_t *A) {
 matrix_t s21_create_matrix(int rows, int columns) {
   matrix_t A;
 
-  if (rows > 0 && columns > 0) {
-    A.columns = columns;
-    A.rows = rows;
-    A.matrix = fill_matrix(rows, columns);
-  }
+  A.columns = columns;
+  A.rows = rows;
+  A.matrix = fill_matrix(rows, columns);
 
   return A;
 }
