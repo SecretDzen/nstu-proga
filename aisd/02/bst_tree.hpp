@@ -1,34 +1,6 @@
 #include <iostream>
 using namespace std;
 
-/*
-[x] конструктор
-[ ] конструктор копирования
-[ ] деструктор
-[x] опрос размера дерева
-[ ] очистка дерева
-[x] проверка дерева на пустоту
-[ ] доступ по чтению/записи к данным по ключу
-[x] включение данных с заданным ключом
-[ ] удаление данных с заданным ключом
-[ ] формирование списка ключей в дереве в порядке обхода узлов по
-схеме, заданной в варианте задания
-[ ] дополнительная операция, заданная в варианте задания
-[x] запрос прямого итератора, установленного на узел дерева с мини-
-мальным ключом begin()
-[ ] запрос обратного итератора, установленного на узел дерева с мак-
-симальным ключом rbegin()
-[x] запрос «неустановленного» прямого итератора end()
-[ ] запрос «неустановленного» обратного итератора rend().
-Операции прямого и обратного итератора выполняются по схеме
-симметричного обхода элементов дерева L → t → R:
-[x] операция доступа по чтению и записи к данным текущего узла *
-[ ] операция перехода к следующему по ключу узлу в дереве ++
-[ ] операция перехода к предыдущему по ключу узлу в дереве --
-[x] проверка равенства однотипных итераторов ==
-[x] проверка неравенства однотипных итераторов !=
-*/
-
 template <class T>
 class bst_tree {
  public:
@@ -37,12 +9,14 @@ class bst_tree {
     friend class bst_tree;
 
     Node(){};
-    Node(T _val) : val(_val), L_tree(nullptr), R_tree(nullptr){};
-    Node(T _val, Node* _left, Node* _right)
-        : val(_val), L_tree(_left), R_tree(_right){};
+    Node(T _val)
+        : val(_val), Parent(nullptr), L_tree(nullptr), R_tree(nullptr){};
+    Node(T _val, Node* L_tree, Node* R_tree)
+        : val(_val), L_tree(L_tree), R_tree(R_tree){};
 
    private:
     T val;
+    Node* Parent;
     Node* L_tree;
     Node* R_tree;
   };
@@ -59,11 +33,52 @@ class bst_tree {
     Iterator& operator++() {
       if (m_node->R_tree) {
         m_node = m_node->R_tree;
-        while (m_node->L_tree) m_node = m_node->L_tree;
+
+        while (m_node->L_tree) {
+          m_node = m_node->L_tree;
+        }
       } else {
-        m_node = get_parent(m_node);
+        Node* parent = m_node->Parent;
+
+        while (parent != nullptr && m_node == parent->R_tree) {
+          m_node = parent;
+          parent = m_node->Parent;
+        }
+
+        if (parent != nullptr && m_node->R_tree != parent) m_node = parent;
       }
+
       return *this;
+    }
+
+    Iterator operator++(int) {
+      auto old = *this;
+      ++(*this);
+      return old;
+    }
+
+    Iterator& operator--() {
+      if (m_node->L_tree) {
+        Node* prev = m_node->L_tree;
+        while (prev->R_tree) prev = prev->R_tree;
+        m_node = prev;
+      } else {
+        Node* parent = m_node->Parent;
+
+        while (parent && m_node == parent->L_tree) {
+          m_node = parent;
+          parent = parent->Parent;
+        }
+        m_node = parent;
+      }
+
+      return *this;
+    }
+
+    Iterator operator--(int) {
+      auto old = *this;
+      --(*this);
+      return old;
     }
 
     friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
@@ -79,27 +94,13 @@ class bst_tree {
   };
 
   Iterator begin() const { return Iterator(find_min(root)); }
-  Iterator end() const { return Iterator(find_max(root)); }
-
-  Iterator find(const T& _val) { return find(begin(), end(), _val); }
-
-  Iterator get_parent(Node* leaf) {
-    Node* parent = leaf;
-    Node* rt = get_root();
-
-    while (1) {
-      if (parent->val < rt->val) {
-        if (rt->L_tree->val == parent->val) break;
-        rt = rt->L_tree;
-      } else if (parent->val > rt->val) {
-        if (rt->R_tree->val == parent->val) break;
-        rt = rt->R_tree;
-      } else {
-        break;
-      }
+  Iterator rbegin() const { return Iterator(find_max(root)); }
+  Iterator end() const { return Iterator(nullptr); }
+  Iterator find(const T& _val) {
+    for (auto iter = begin(); iter != find_max(); iter++) {
+      if (*iter == _val) return iter;
     }
-
-    return rt;
+    return end();
   }
 
   Node* find_min() const { return find_min(root); }
@@ -113,8 +114,6 @@ class bst_tree {
       parent = child;
       if (child->L_tree) {
         child = child->L_tree;
-      } else if (child->R_tree) {
-        child = child->R_tree;
       } else {
         break;
       }
@@ -131,8 +130,6 @@ class bst_tree {
       parent = child;
       if (child->R_tree) {
         child = child->R_tree;
-      } else if (child->L_tree) {
-        child = child->L_tree;
       } else {
         break;
       }
@@ -140,6 +137,13 @@ class bst_tree {
 
     return parent;
   }
+
+  Node* get_first(Node* pr) {
+    while (pr->L_tree != nullptr) pr = pr->L_tree;
+    return pr;
+  }
+
+  Node* get_root() { return !root ? nullptr : root; }
 
   void insert(Node* leaf, const T& _val) {
     Node* p = new Node(_val);
@@ -162,6 +166,8 @@ class bst_tree {
         }
       }
 
+      p->Parent = parent;
+
       if (_val < parent->val) {
         parent->L_tree = p;
         size++;
@@ -175,10 +181,43 @@ class bst_tree {
   void insert(const T& _val) {
     if (!root) {
       root = new Node(_val);
+      root->Parent = nullptr;
       size++;
     } else {
       insert(root, _val);
     }
+  }
+
+  void erase(const T& value) { erase(find(value)); }
+
+  void erase(Iterator pos) {
+    if (pos == end()) return;
+
+    Node* node = pos.m_node;
+    Node* parent = node->Parent;
+
+    if (!parent) root = root->R_tree;
+
+    if (!node->L_tree && !node->R_tree) {
+      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = nullptr;
+    } else if (node->L_tree && node->R_tree) {
+      Node* newParent = get_first(node->R_tree);
+
+      newParent->L_tree = node->L_tree;
+      newParent->L_tree->Parent = newParent;
+      node->R_tree->Parent = parent;
+      if (parent) {
+        (node == parent->L_tree ? parent->L_tree : parent->R_tree) =
+            node->R_tree;
+      }
+    } else if (parent) {
+      Node* child = (node->L_tree == nullptr ? node->R_tree : node->L_tree);
+      child->Parent = parent;
+      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = child;
+    }
+
+    size--;
+    delete node;
   }
 
   void inorder(Node* leaf) {
@@ -190,12 +229,9 @@ class bst_tree {
   }
 
   void by_plus() {
-    int i = 0;
-    for(auto it = begin(); it != end(); ++it) {
-      cout << it.m_node->val;
-      if(i >= size) break;
-      i++;
-
+    for (auto it = begin(); it != end(); it++) {
+      cout << *it << " ";
+      if (it.m_node == find_max()) break;
     }
     cout << endl;
   }
@@ -205,9 +241,14 @@ class bst_tree {
     cout << endl;
   }
 
-  void clear(Node* leaf) { delete leaf; }
-
-  Node* get_root() { return !root ? nullptr : root; }
+  void clear(Node* leaf) {
+    if (leaf != nullptr) {
+      clear(leaf->L_tree);
+      clear(leaf->R_tree);
+      delete leaf;
+    }
+    size = 0;
+  }
 
   const T& get_val(Node* leaf) { return leaf->val; }
   const T& get_val(Iterator leaf) { return leaf.m_node->val; }
@@ -219,6 +260,28 @@ class bst_tree {
     root = nullptr;
     size = 0;
   };
+
+  void merge(const bst_tree& src) {
+    for(auto it = src.begin(); it != src.end(); it++) {
+      insert(*it);
+      if (it.m_node == src.rbegin()) break;
+    }
+  }
+
+  bst_tree& operator=(const bst_tree& src) {
+    clear(root);
+    size = 0;
+    root = nullptr;
+
+    for (auto item = src.begin(); item != src.end(); ++item) {
+      insert(*item);
+      if (item == src.rbegin()) break;
+    }
+
+    return *this;
+  }
+
+  bst_tree(const bst_tree& src) : bst_tree() { *this = src; }
 
   ~bst_tree() { clear(root); };
 
