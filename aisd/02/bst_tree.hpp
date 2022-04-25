@@ -14,6 +14,8 @@ class bst_tree {
     Node(T _val, Node* L_tree, Node* R_tree)
         : val(_val), L_tree(L_tree), R_tree(R_tree){};
 
+    T& operator*() { return val; }
+
    private:
     T val;
     Node* Parent;

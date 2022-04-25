@@ -1,34 +1,151 @@
 #include "bst_tree.hpp"
+void show_tree();
+void show_menu();
+void show_wrong();
+void edit_step(int _param);
+void tree_insert();
+void tree_erase();
+void show_min();
+void show_max();
+void show_root();
+void show_size();
+
+bst_tree<int> one;
 
 int main() {
-  bst_tree<int> one;
-  one.insert(4);
-  one.insert(6);
-  one.insert(2);
-  one.insert(3);
-  one.insert(9);
-  one.insert(5);
-  one.insert(-15);
-  one.insert(-10);
-  one.insert(-11);
-  one.insert(-9);
-  one.display();
-  cout << "Size: " << one.get_size() << endl;
-  one.by_plus();
+  int param = 0;
 
-  bst_tree<int> t2;
+  do {
+    show_tree();
+    show_menu();
 
-  t2.insert(12);
-  t2.insert(21);
-  t2.insert(-19);
-  t2.insert(-10);
-  t2.display();
-  cout << "Size: " << t2.get_size() << endl;
-  t2.by_plus();
+    cout << "Enter: ";
+    cin >> param;
 
-  one.merge(t2);
-  one.display();
-  cout << "Size: " << one.get_size() << endl;
+    system("clear");
+
+    if (param) edit_step(param);
+  } while (param);
 
   return 0;
+}
+
+void show_min() {
+  auto it = one.find_max();
+  cout << "=================" << endl;
+  cout << "Minimal value: " << one.get_val(it) << endl;
+  cout << "=================" << endl;
+}
+
+void show_max() {
+  auto it = one.find_max();
+  cout << "=================" << endl;
+  cout << "Maximum value: " << one.get_val(it) << endl;
+  cout << "=================" << endl;
+}
+
+void show_root() {
+  auto it = one.get_root();
+  cout << "=================" << endl;
+  cout << "Root value: " << one.get_val(it) << endl;
+  cout << "=================" << endl;
+}
+
+void show_size() {
+  int it = one.get_size();
+  cout << "=================" << endl;
+  cout << "Tree size: " << it << endl;
+  cout << "=================" << endl;
+}
+
+void show_wrong() {
+  cout << "================================" << endl;
+  cout << "You entered wrong key. Try again" << endl;
+  cout << "================================" << endl;
+}
+
+void tree_insert() {
+  int key = 0;
+
+  do {
+    cin.clear();
+    cin.ignore(80, '\n');
+
+    cout << "Enter key to insert: ";
+    cin >> key;
+
+    system("clear");
+    if (cin.fail()) show_wrong();
+
+  } while (cin.fail());
+
+  one.insert(key);
+}
+
+void tree_erase() {
+  int key = 0;
+
+  do {
+    cin.clear();
+    cin.ignore(80, '\n');
+
+    cout << "Enter key to erase: ";
+    cin >> key;
+
+    system("clear");
+    if (cin.fail()) show_wrong();
+
+  } while (cin.fail());
+
+  one.erase(key);
+}
+
+void edit_step(int _param) {
+  switch (_param) {
+    case 1:
+      tree_insert();
+      break;
+
+    case 2:
+      tree_erase();
+      break;
+
+    case 3:
+      show_min();
+      break;
+
+    case 4:
+      show_max();
+      break;
+
+    case 5:
+      show_root();
+      break;
+    
+    case 6:
+      show_size();
+      break;
+
+    default:
+      cout << "Wrong param given" << endl;
+      break;
+  }
+}
+
+void show_tree() {
+  cout << "===Lt-t-Rt display===" << endl;
+  one.display();
+  cout << endl;
+}
+
+void show_menu() {
+  cout << "===Program menu===" << endl;
+  cout << "1) Insert Node" << endl;
+  cout << "2) Erase Node" << endl;
+  cout << "3) Show min key" << endl;
+  cout << "4) Show max key" << endl;
+  cout << "5) Show root" << endl;
+  cout << "6) Show size" << endl;
+  cout << "0) Exit" << endl;
+  cout << endl;
 }
