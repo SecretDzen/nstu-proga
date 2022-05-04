@@ -6,7 +6,7 @@
 #include <iostream>
 #include <thread>
 
-#define SIZE 200
+#define SIZE 400
 
 double func(double x) { return pow(2.0 * x + 1.0, 0.25) - 1.0; }
 
