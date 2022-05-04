@@ -49,12 +49,10 @@ int main() {
     P_PC2_downtime += PC2.T_downtime;
   }
 
-  cout << "Average waiting time: " << P_total_wait / 100.0 << "s" << endl;
-  cout << "Average time of task in sys: " << P_in_sys / 100.0 << "s" << endl;
-  cout << "Probability of downtime PC1: " << P_PC1_downtime / 100.0 << "%"
-       << endl;
-  cout << "Probability of downtime PC2: " << P_PC2_downtime / 100.0 << "%"
-       << endl;
+  cout << "Average waiting time: " << P_total_wait / 10.0 << "s" << endl;
+  cout << "Average time of task in sys: " << P_in_sys / 4.0 << "s" << endl;
+  cout << "Probability of downtime PC1: " << P_PC1_downtime / 1000.0 << endl;
+  cout << "Probability of downtime PC2: " << P_PC2_downtime / 1000.0 << endl;
 
   return 0;
 }
