@@ -16,8 +16,7 @@ int main() {
 
   double a = 0.0;
   double b = 0.316;
-
-  double W = b;
+  double W = func(b);
 
   srand(time(NULL));
 
