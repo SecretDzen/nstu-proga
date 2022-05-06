@@ -1,4 +1,5 @@
 #include "bst_tree.hpp"
+
 void show_tree();
 void show_menu();
 void show_wrong();
@@ -11,6 +12,7 @@ void show_root();
 void show_size();
 
 bst_tree<int> one;
+int curr_val = 0;
 
 int main() {
   int param = 0;

@@ -41,13 +41,16 @@ class bst_tree {
         }
       } else {
         Node* parent = m_node->Parent;
+        Node* lastOne = m_node;
 
         while (parent != nullptr && m_node == parent->R_tree) {
           m_node = parent;
           parent = m_node->Parent;
         }
 
+        lastOne = m_node;
         if (parent != nullptr && m_node->R_tree != parent) m_node = parent;
+        if (m_node == lastOne) m_node = nullptr;
       }
 
       return *this;
@@ -225,15 +228,14 @@ class bst_tree {
   void inorder(Node* leaf) {
     if (leaf != nullptr) {
       inorder(leaf->L_tree);
-      inorder(leaf->R_tree);
       cout << leaf->val << " ";
+      inorder(leaf->R_tree);
     }
   }
 
   void by_plus() {
     for (auto it = begin(); it != end(); it++) {
       cout << *it << " ";
-      if (it.m_node == find_max()) break;
     }
     cout << endl;
   }
@@ -264,9 +266,8 @@ class bst_tree {
   };
 
   void merge(const bst_tree& src) {
-    for(auto it = src.begin(); it != src.end(); it++) {
+    for (auto it = src.begin(); it != src.end(); it++) {
       insert(*it);
-      if (it.m_node == src.rbegin()) break;
     }
   }
 
@@ -277,7 +278,6 @@ class bst_tree {
 
     for (auto item = src.begin(); item != src.end(); ++item) {
       insert(*item);
-      if (item == src.rbegin()) break;
     }
 
     return *this;
