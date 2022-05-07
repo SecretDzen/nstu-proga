@@ -9,13 +9,13 @@ double** swap_lines(double** matrix, int i, int j, int size);
 double** zeroing(double** matrix, int i, int size);
 double** create_matrix(int rows, int cols);
 
-#define M 25
+#define M 31
 
 int main() {
   srand(time(NULL));
   double** anwser = create_matrix(M, 2);
 
-  for (int size = 100, n = 0; n < M; size += 100, n++) {
+  for (int size = 100, n = 0; n < M; size += 10, n++) {
     double** matrix = create_matrix(size, size);
 
     for (int i = 0; i < size; i++) {
@@ -32,7 +32,7 @@ int main() {
     free(matrix);
   }
 
-  FILE *fp = fopen("data.txt", "w");
+  FILE *fp = fopen("build/data.txt", "w");
   for (int i = 0; i < M; i++) {
     fprintf(fp, "%.0f %.3f\n", anwser[i][0], anwser[i][1]);
   }
