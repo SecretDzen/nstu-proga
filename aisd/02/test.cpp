@@ -4,16 +4,24 @@ bst_tree<int> one;
 bst_tree<int> two;
 int main() {
   one.insert(10);
-  one.insert(20);
-  one.insert(30);
   one.insert(5);
-  one.insert(7);
+  one.insert(0);
   one.insert(2);
-  one.insert(25);
+  one.insert(15);
+  one.insert(12);
+  one.insert(18);
 
+  cout << "By plus" << endl;
   one.by_plus();
+  cout << "By minus" << endl;
+  one.by_minus();
 
-  two.merge(one);
+  two = one;
+
+  cout << "By plus" << endl;
   two.by_plus();
+  cout << "By minus" << endl;
+  two.by_minus();
+
   return 0;
 }

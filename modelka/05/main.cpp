@@ -6,9 +6,9 @@
 #include <iostream>
 #include <thread>
 
-#define SIZE 200
+#define SIZE 300
 
-double func(double x) { return pow(2.0 * (x + 1.0), 3); }
+double func(double x) { return 2.0 * pow(x + 1.0, 3); }
 
 int main() {
   double kx[SIZE] = {0};
@@ -17,7 +17,7 @@ int main() {
   double a = 0.0;
   double b = 0.316;
   double W = func(b);
-
+int done = 0;
   srand(time(NULL));
 
   for (int i = 0; i < SIZE; i++) {
@@ -31,8 +31,10 @@ int main() {
     double y = W * ky[j];
 
     if (y <= func(x)) {
+      done++;
       std::cout << x << std::endl;
     }
+    if (done == 200) break;
   }
 
   return 0;

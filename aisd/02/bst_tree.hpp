@@ -101,8 +101,11 @@ class bst_tree {
   Iterator begin() const { return Iterator(find_min(root)); }
   Iterator rbegin() const { return Iterator(find_max(root)); }
   Iterator end() const { return Iterator(nullptr); }
+  Iterator rend() const { return Iterator(nullptr); }
+  Iterator it_root() const { return Iterator(root); }
+
   Iterator find(const T& _val) {
-    for (auto iter = begin(); iter != find_max(); iter++) {
+    for (auto iter = begin(); iter != end(); iter++) {
       if (*iter == _val) return iter;
     }
     return end();
@@ -200,10 +203,15 @@ class bst_tree {
 
     Node* node = pos.m_node;
     Node* parent = node->Parent;
+    int cleared = 0;
 
-    if (!parent) root = root->R_tree;
+    if (!parent) {
+      if (root->R_tree) root = root->R_tree;
+      if (root->L_tree) root = root->L_tree;
+      if (!root->L_tree && !root->R_tree) cleared = 1;
+    }
 
-    if (!node->L_tree && !node->R_tree) {
+    if (!node->L_tree && !node->R_tree && !cleared) {
       (node == parent->L_tree ? parent->L_tree : parent->R_tree) = nullptr;
     } else if (node->L_tree && node->R_tree) {
       Node* newParent = get_first(node->R_tree);
@@ -228,13 +236,20 @@ class bst_tree {
   void inorder(Node* leaf) {
     if (leaf != nullptr) {
       inorder(leaf->L_tree);
-      cout << leaf->val << " ";
       inorder(leaf->R_tree);
+      cout << leaf->val << " ";
     }
   }
 
   void by_plus() {
     for (auto it = begin(); it != end(); it++) {
+      cout << *it << " ";
+    }
+    cout << endl;
+  }
+
+  void by_minus() {
+    for (auto it = rbegin(); it != rend(); it--) {
       cout << *it << " ";
     }
     cout << endl;
@@ -246,7 +261,7 @@ class bst_tree {
   }
 
   void clear(Node* leaf) {
-    if (leaf != nullptr) {
+    if (leaf != nullptr && size > 0) {
       clear(leaf->L_tree);
       clear(leaf->R_tree);
       delete leaf;
@@ -260,11 +275,6 @@ class bst_tree {
   int get_size() { return size; }
   int is_empty() { return root == nullptr; }
 
-  bst_tree() {
-    root = nullptr;
-    size = 0;
-  };
-
   void merge(const bst_tree& src) {
     for (auto it = src.begin(); it != src.end(); it++) {
       insert(*it);
@@ -276,12 +286,20 @@ class bst_tree {
     size = 0;
     root = nullptr;
 
-    for (auto item = src.begin(); item != src.end(); ++item) {
+    for (auto item = src.it_root(); item != src.end(); item++) {
+      insert(*item);
+    }
+    for (auto item = src.begin(); item != src.it_root(); item++) {
       insert(*item);
     }
 
     return *this;
   }
+
+  bst_tree() {
+    root = nullptr;
+    size = 0;
+  };
 
   bst_tree(const bst_tree& src) : bst_tree() { *this = src; }
 

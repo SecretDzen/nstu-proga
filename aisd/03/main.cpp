@@ -1,6 +1,4 @@
-#include <unistd.h>
-
-#include "bst_tree.hpp"
+#include "avl_tree.hpp"
 
 void show_tree();
 void show_menu();
@@ -13,7 +11,7 @@ void show_max();
 void show_root();
 void show_size();
 
-bst_tree<int> one;
+avl_tree<int> one;
 int curr_val = 0;
 
 int main() {
@@ -31,43 +29,27 @@ int main() {
     if (param) edit_step(param);
   } while (param);
 
-  cout << "Exiting.." << endl;
-  sleep(1);
-  system("clear");
-
   return 0;
 }
 
 void show_min() {
-  auto it = one.find_min();
+  auto it = one.find_max();
   cout << "=================" << endl;
-  if (it) {
-    cout << "Minimal key: " << one.get_val(it) << endl;
-  } else {
-    cout << "Empty tree" << endl;
-  }
+  cout << "Minimal value: " << one.get_val(it) << endl;
   cout << "=================" << endl;
 }
 
 void show_max() {
   auto it = one.find_max();
   cout << "=================" << endl;
-  if (it) {
-    cout << "Max key: " << one.get_val(it) << endl;
-  } else {
-    cout << "Empty tree" << endl;
-  }
+  cout << "Maximum value: " << one.get_val(it) << endl;
   cout << "=================" << endl;
 }
 
 void show_root() {
   auto it = one.get_root();
   cout << "=================" << endl;
-  if (it) {
-    cout << "Root key: " << one.get_val(it) << endl;
-  } else {
-    cout << "Empty tree" << endl;
-  }
+  cout << "Root value: " << one.get_val(it) << endl;
   cout << "=================" << endl;
 }
 
@@ -141,7 +123,7 @@ void edit_step(int _param) {
     case 5:
       show_root();
       break;
-
+    
     case 6:
       show_size();
       break;
@@ -153,7 +135,7 @@ void edit_step(int _param) {
 }
 
 void show_tree() {
-  cout << "===Lt-Rt-t display===" << endl;
+  cout << "===Lt-t-Rt display===" << endl;
   one.display();
   cout << endl;
 }
@@ -164,7 +146,7 @@ void show_menu() {
   cout << "2) Erase Node" << endl;
   cout << "3) Show min key" << endl;
   cout << "4) Show max key" << endl;
-  cout << "5) Show root key" << endl;
+  cout << "5) Show root" << endl;
   cout << "6) Show size" << endl;
   cout << "0) Exit" << endl;
   cout << endl;
