@@ -12,7 +12,7 @@ void show_max();
 void show_root();
 void show_size();
 
-avl_tree<int> one;
+avl<int> one;
 int curr_val = 0;
 
 int main() {
@@ -34,7 +34,7 @@ int main() {
 }
 
 void show_min() {
-  auto it = one.find_min();
+  auto it = one.find_min(one.get_root());
   cout << "=================" << endl;
   if (it) {
     cout << "Minimal key: " << one.get_val(it) << endl;
@@ -45,7 +45,7 @@ void show_min() {
 }
 
 void show_max() {
-  auto it = one.find_max();
+  auto it = one.find_max(one.get_root());
   cout << "=================" << endl;
   if (it) {
     cout << "Max key: " << one.get_val(it) << endl;

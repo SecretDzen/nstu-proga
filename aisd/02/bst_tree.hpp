@@ -121,7 +121,8 @@ class bst_tree {
   Node* find_max() const { return find_max(root); }
 
   Node* find_min(Node* leaf) const {
-    while (leaf->L_tree != nullptr) leaf = leaf->L_tree;
+    while (leaf && leaf->L_tree) leaf = leaf->L_tree;
+
     return leaf;
   }
 

@@ -1,6 +1,5 @@
 #include <iostream>
 
-/*
 #include "../02/bst_tree.hpp"
 template <class T>
 class avl : public bst_tree<T> {
@@ -18,28 +17,13 @@ class avl : public bst_tree<T> {
   };
 
   Iterator begin() const { return Iterator(this->find_min(root)); }
-  Iterator rbegin() const { return Iterator(this->find_max(root)); }
   Iterator end() const { return Iterator(nullptr); }
-  Iterator rend() const { return Iterator(nullptr); }
 
   Iterator find(const T& _val) {
     for (auto iter = begin(); iter != end(); iter++) {
       if (*iter == _val) return iter;
     }
     return end();
-  }
-
-  void inorder(Node* leaf) {
-    if (leaf != nullptr) {
-      inorder((Node *)leaf->L_tree);
-      inorder((Node *)leaf->R_tree);
-      std::cout << leaf->val << " ";
-    }
-  }
-
-  void display() {
-    inorder(root);
-    std::cout << std::endl;
   }
 
   void insert(Node* leaf, const T& _val) {
@@ -125,30 +109,24 @@ class avl : public bst_tree<T> {
 
     size--;
     delete node;
+
+    Node* prt = parent;
+
+    while (prt != root) {
+      Node* nextParent = (Node*)prt->Parent;
+      prt = balance(prt);
+      prt = nextParent;
+    }
+
+    root = balance(prt);
   }
+
+  int get_size() { return size; }
+  Node* get_root() { return !root ? nullptr : root; }
 
   void by_plus() {
     using std::cout;
-
     for (auto it = begin(); it != end(); it++) {
-      cout << "Key: " << *it << " ";
-      Node* parent = (Node*)it.m_node->getParent();
-
-      if (parent) {
-        if (parent->R_tree == it.m_node) cout << "Right child";
-        if (parent->L_tree == it.m_node) cout << "Left child";
-      } else {
-        cout << "Root";
-      }
-      cout << std::endl;
-    }
-    cout << std::endl;
-  }
-
-  void by_minus() {
-    using std::cout;
-
-    for (auto it = rbegin(); it != rend(); it--) {
       cout << "Key: " << *it << " ";
       Node* parent = (Node*)it.m_node->getParent();
 
@@ -176,12 +154,17 @@ class avl : public bst_tree<T> {
   }
 
   Node* rotate_right(Node* leaf) {
+    Node* prt = (Node*)leaf->Parent;
     Node* p = (Node*)leaf->L_tree;
     leaf->L_tree = p->R_tree;
     if (leaf->L_tree) leaf->L_tree->setParent(leaf);
     p->R_tree = leaf;
     fix_height(leaf);
     fix_height(p);
+
+    if (prt) {
+      prt->L_tree == leaf ? prt->L_tree = p : prt->R_tree = p;
+    }
 
     p->Parent = leaf->Parent;
     leaf->Parent = p;
@@ -223,12 +206,11 @@ class avl : public bst_tree<T> {
   int size;
 };
 
-*/
-
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
 
+/*
 using namespace std;
 
 template <class T>
@@ -529,8 +511,9 @@ class avl_tree {
   }
 
   Node* rotate_right(Node* leaf) {
+    Node* prt = leaf->Parent;
     Node* p = leaf->L_tree;
-    cout << "Rotoscoping right: " << p->val << endl;
+    cout << "Rotoscoping right: " << leaf->val << endl;
 
     leaf->L_tree = p->R_tree;
     if (leaf->L_tree) leaf->L_tree->Parent = leaf;
@@ -538,6 +521,9 @@ class avl_tree {
     fix_height(leaf);
     fix_height(p);
 
+    if (prt) {
+      prt->L_tree == leaf ? prt->L_tree = p : prt->R_tree = p;
+    }
     p->Parent = leaf->Parent;
     leaf->Parent = p;
     return p;
@@ -545,7 +531,8 @@ class avl_tree {
 
   Node* rotate_left(Node* leaf) {
     Node* p = leaf->R_tree;
-    cout << "Rotoscoping left: " << p->val << endl;
+    cout << "Rotoscoping left: " << leaf->val << endl;
+
     leaf->R_tree = p->L_tree;
     if (leaf->R_tree) leaf->R_tree->Parent = leaf;
     p->L_tree = leaf;
@@ -593,3 +580,5 @@ class avl_tree {
   Node* root;
   int size;
 };
+
+*/

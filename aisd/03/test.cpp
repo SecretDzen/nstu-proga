@@ -1,12 +1,11 @@
 #include "avl_tree.hpp"
 
-avl_tree<int> one;
+avl<int> one;
 int main() {
   one.insert(10);
   one.insert(12);
-  one.insert(8);
-  one.insert(5);
-  one.insert(3);
+  one.insert(13);
+  one.insert(14);
   one.by_plus();
 
   one.display();
