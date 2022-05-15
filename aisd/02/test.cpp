@@ -11,6 +11,7 @@ int main() {
   one.insert(15);
   one.insert(12);
   one.insert(18);
+  one.erase(15);
 
   cout << "By plus" << endl;
   one.by_plus();

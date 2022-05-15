@@ -1,5 +1,6 @@
 #include "avl_tree.hpp"
 
+using namespace std;
 void show_tree();
 void show_menu();
 void show_wrong();
@@ -33,23 +34,35 @@ int main() {
 }
 
 void show_min() {
-  auto it = one.find_max();
+  auto it = one.find_min();
   cout << "=================" << endl;
-  cout << "Minimal value: " << one.get_val(it) << endl;
+  if (it) {
+    cout << "Minimal key: " << one.get_val(it) << endl;
+  } else {
+    cout << "Empty tree" << endl;
+  }
   cout << "=================" << endl;
 }
 
 void show_max() {
   auto it = one.find_max();
   cout << "=================" << endl;
-  cout << "Maximum value: " << one.get_val(it) << endl;
+  if (it) {
+    cout << "Max key: " << one.get_val(it) << endl;
+  } else {
+    cout << "Empty tree" << endl;
+  }
   cout << "=================" << endl;
 }
 
 void show_root() {
   auto it = one.get_root();
   cout << "=================" << endl;
-  cout << "Root value: " << one.get_val(it) << endl;
+  if (it) {
+    cout << "Root key: " << one.get_val(it) << endl;
+  } else {
+    cout << "Empty tree" << endl;
+  }
   cout << "=================" << endl;
 }
 
@@ -136,7 +149,7 @@ void edit_step(int _param) {
 
 void show_tree() {
   cout << "===Lt-t-Rt display===" << endl;
-  one.display();
+  one.by_plus();
   cout << endl;
 }
 

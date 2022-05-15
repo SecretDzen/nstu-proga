@@ -1,43 +1,46 @@
 #include <iostream>
 
+/*
 #include "../02/bst_tree.hpp"
-
 template <class T>
 class avl : public bst_tree<T> {
  public:
-  class Node : bst_tree<T>::Node {
+  using bst_tree<T>::bst_tree;
+  class Node : public bst_tree<T>::Node {
    public:
     friend class avl;
-
-    Node(T _val)
-        : val(_val),
-          Parent(nullptr),
-          L_tree(nullptr),
-          R_tree(nullptr),
-          height(1){};
-    Node* get_parent() { return this->Parent; }
-    Node* get_L_tree() { return this->L_tree; }
-    Node* get_R_tree() { return this->R_tree; }
-    Node* get_height() { return this->height; }
-   private:
-    T val;
-    Node* Parent;
-    Node* L_tree;
-    Node* R_tree;
-    unsigned char height;
+    using bst_tree<T>::Node::Node;
   };
 
   class Iterator : public bst_tree<T>::Iterator {
     friend class avl;
-
-    Iterator(Node* _node) : m_node(_node) {}
-
-   private:
-    Node* m_node;
+    using bst_tree<T>::Iterator::Iterator;
   };
 
-  Iterator begin() const { return Iterator(find_min(root)); }
+  Iterator begin() const { return Iterator(this->find_min(root)); }
+  Iterator rbegin() const { return Iterator(this->find_max(root)); }
   Iterator end() const { return Iterator(nullptr); }
+  Iterator rend() const { return Iterator(nullptr); }
+
+  Iterator find(const T& _val) {
+    for (auto iter = begin(); iter != end(); iter++) {
+      if (*iter == _val) return iter;
+    }
+    return end();
+  }
+
+  void inorder(Node* leaf) {
+    if (leaf != nullptr) {
+      inorder((Node *)leaf->L_tree);
+      inorder((Node *)leaf->R_tree);
+      std::cout << leaf->val << " ";
+    }
+  }
+
+  void display() {
+    inorder(root);
+    std::cout << std::endl;
+  }
 
   void insert(Node* leaf, const T& _val) {
     Node* p = new Node(_val);
@@ -47,9 +50,9 @@ class avl : public bst_tree<T> {
     while (child) {
       parent = child;
       if (_val < child->val) {
-        child = child->L_tree;
+        child = (Node*)child->L_tree;
       } else if (_val > child->val) {
-        child = child->R_tree;
+        child = (Node*)child->R_tree;
       } else {
         break;
       }
@@ -68,7 +71,7 @@ class avl : public bst_tree<T> {
     Node* prt = parent;
 
     while (prt != root) {
-      Node* nextParent = prt->Parent;
+      Node* nextParent = (Node*)prt->Parent;
       prt = balance(prt);
       prt = nextParent;
     }
@@ -86,12 +89,68 @@ class avl : public bst_tree<T> {
     }
   }
 
+  void erase(const T& value) { erase(find(value)); }
+
+  void erase(Iterator pos) {
+    if (pos == end()) return;
+
+    Node* node = (Node*)pos.m_node;
+    Node* parent = (Node*)node->Parent;
+    int cleared = 0;
+
+    if (!parent) {
+      if (root->R_tree) root = (Node*)root->R_tree;
+      if (root->L_tree) root = (Node*)root->L_tree;
+      if (!root->L_tree && !root->R_tree) cleared = 1;
+    }
+
+    if (!node->L_tree && !node->R_tree && !cleared) {
+      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = nullptr;
+    } else if (node->L_tree && node->R_tree) {
+      Node* newParent = (Node*)this->find_min(node->R_tree);
+
+      newParent->L_tree = node->L_tree;
+      newParent->L_tree->setParent(newParent);
+      node->R_tree->setParent(parent);
+      if (parent) {
+        (node == parent->L_tree ? parent->L_tree : parent->R_tree) =
+            node->R_tree;
+      }
+    } else if (parent) {
+      Node* child =
+          (Node*)(node->L_tree == nullptr ? node->R_tree : node->L_tree);
+      child->Parent = parent;
+      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = child;
+    }
+
+    size--;
+    delete node;
+  }
+
   void by_plus() {
     using std::cout;
 
     for (auto it = begin(); it != end(); it++) {
       cout << "Key: " << *it << " ";
-      Node* parent = it.m_node->Parent;
+      Node* parent = (Node*)it.m_node->getParent();
+
+      if (parent) {
+        if (parent->R_tree == it.m_node) cout << "Right child";
+        if (parent->L_tree == it.m_node) cout << "Left child";
+      } else {
+        cout << "Root";
+      }
+      cout << std::endl;
+    }
+    cout << std::endl;
+  }
+
+  void by_minus() {
+    using std::cout;
+
+    for (auto it = rbegin(); it != rend(); it--) {
+      cout << "Key: " << *it << " ";
+      Node* parent = (Node*)it.m_node->getParent();
 
       if (parent) {
         if (parent->R_tree == it.m_node) cout << "Right child";
@@ -107,19 +166,19 @@ class avl : public bst_tree<T> {
   unsigned char get_height(Node* leaf) { return leaf ? leaf->height : 0; }
 
   int bfactor(Node* leaf) {
-    return get_height(leaf->R_tree) - get_height(leaf->L_tree);
+    return get_height((Node*)leaf->R_tree) - get_height((Node*)leaf->L_tree);
   }
 
   void fix_height(Node* leaf) {
-    unsigned char hl = get_height(leaf->L_tree);
-    unsigned char hr = get_height(leaf->R_tree);
+    unsigned char hl = get_height((Node*)leaf->L_tree);
+    unsigned char hr = get_height((Node*)leaf->R_tree);
     leaf->height = (hl > hr ? hl : hr) + 1;
   }
 
   Node* rotate_right(Node* leaf) {
-    Node* p = leaf->L_tree;
+    Node* p = (Node*)leaf->L_tree;
     leaf->L_tree = p->R_tree;
-    if (leaf->L_tree) leaf->L_tree->Parent = leaf;
+    if (leaf->L_tree) leaf->L_tree->setParent(leaf);
     p->R_tree = leaf;
     fix_height(leaf);
     fix_height(p);
@@ -130,9 +189,9 @@ class avl : public bst_tree<T> {
   }
 
   Node* rotate_left(Node* leaf) {
-    Node* p = leaf->R_tree;
+    Node* p = (Node*)leaf->R_tree;
     leaf->R_tree = p->L_tree;
-    if (leaf->R_tree) leaf->R_tree->Parent = leaf;
+    if (leaf->R_tree) leaf->R_tree->setParent(leaf);
     p->L_tree = leaf;
     fix_height(leaf);
     fix_height(p);
@@ -146,26 +205,32 @@ class avl : public bst_tree<T> {
     fix_height(leaf);
 
     if (bfactor(leaf) > 1) {
-      if (bfactor(leaf->R_tree) < 0) leaf->R_tree = rotate_right(leaf->R_tree);
+      if (bfactor((Node*)leaf->R_tree) < 0)
+        leaf->R_tree = rotate_right((Node*)leaf->R_tree);
       return rotate_left(leaf);
     }
 
     if (bfactor(leaf) < -1) {
-      if (bfactor(leaf->L_tree) > 0) leaf->L_tree = rotate_left(leaf->L_tree);
+      if (bfactor((Node*)leaf->L_tree) > 0)
+        leaf->L_tree = rotate_left((Node*)leaf->L_tree);
       return rotate_right(leaf);
     }
     return leaf;
   }
 
- private:
+ protected:
   Node* root;
   int size;
 };
 
+*/
+
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
-/*
+
+using namespace std;
+
 template <class T>
 class avl_tree {
  public:
@@ -350,14 +415,12 @@ class avl_tree {
     }
 
     Node* prt = parent;
-
     while (prt != root) {
       Node* nextParent = prt->Parent;
       prt = balance(prt);
       prt = nextParent;
     }
-
-    root = balance(prt);
+    root = balance(root);
   }
 
   void insert(const T& _val) {
@@ -467,6 +530,8 @@ class avl_tree {
 
   Node* rotate_right(Node* leaf) {
     Node* p = leaf->L_tree;
+    cout << "Rotoscoping right: " << p->val << endl;
+
     leaf->L_tree = p->R_tree;
     if (leaf->L_tree) leaf->L_tree->Parent = leaf;
     p->R_tree = leaf;
@@ -480,6 +545,7 @@ class avl_tree {
 
   Node* rotate_left(Node* leaf) {
     Node* p = leaf->R_tree;
+    cout << "Rotoscoping left: " << p->val << endl;
     leaf->R_tree = p->L_tree;
     if (leaf->R_tree) leaf->R_tree->Parent = leaf;
     p->L_tree = leaf;
@@ -495,11 +561,13 @@ class avl_tree {
     fix_height(leaf);
 
     if (bfactor(leaf) > 1) {
+      cout << "Rotoscoping above 1" << endl;
       if (bfactor(leaf->R_tree) < 0) leaf->R_tree = rotate_right(leaf->R_tree);
       return rotate_left(leaf);
     }
 
     if (bfactor(leaf) < -1) {
+      cout << "Rotoscoping below -1" << endl;
       if (bfactor(leaf->L_tree) > 0) leaf->L_tree = rotate_left(leaf->L_tree);
       return rotate_right(leaf);
     }
@@ -521,18 +589,7 @@ class avl_tree {
     return *this;
   }
 
-  avl_tree() {
-    root = nullptr;
-    size = 0;
-  };
-
-  avl_tree(const avl_tree& src) : avl_tree() { *this = src; }
-
-  ~avl_tree() { clear(root); };
-
  private:
   Node* root;
   int size;
 };
-
-*/

@@ -16,8 +16,10 @@ class bst_tree {
           height(1){};
 
     T& operator*() { return val; }
+    Node* getParent() { return Parent; }
+    void setParent(Node* parent) { this->Parent = parent; }
 
-   private:
+   protected:
     T val;
     Node* Parent;
     Node* L_tree;
@@ -33,6 +35,8 @@ class bst_tree {
 
     T& operator*() { return m_node->val; }
     T& operator->() { return &m_node->val; }
+
+    Node* getNode() { return m_node; }
 
     Iterator& operator++() {
       if (m_node->R_tree) {
@@ -96,7 +100,7 @@ class bst_tree {
       return lhs.m_node != rhs.m_node;
     }
 
-   private:
+   protected:
     Node* m_node;
   };
 
@@ -287,7 +291,7 @@ class bst_tree {
 
   ~bst_tree() { clear(root); };
 
- private:
+ protected:
   Node* root;
   int size;
 };
