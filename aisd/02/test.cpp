@@ -1,5 +1,6 @@
 #include "bst_tree.hpp"
 
+using namespace std;
 bst_tree<int> one;
 bst_tree<int> two;
 int main() {
@@ -22,6 +23,5 @@ int main() {
   two.by_plus();
   cout << "By minus" << endl;
   two.by_minus();
-
   return 0;
 }

@@ -12,4 +12,5 @@ int main() {
   one.by_plus();
 
   one.display();
+  return 0;
 }

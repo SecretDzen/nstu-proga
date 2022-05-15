@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -Wextra -Werror
+CFLAGS=-Wall -Wextra -Werror -fpermissive
 BUILD_PATH=build/
 
 l3_test:

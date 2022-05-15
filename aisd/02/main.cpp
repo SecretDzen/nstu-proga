@@ -2,6 +2,8 @@
 
 #include "bst_tree.hpp"
 
+using namespace std;
+
 void show_tree();
 void show_menu();
 void show_wrong();

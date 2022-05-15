@@ -1,30 +1,24 @@
 #include <iostream>
 
 #include "../02/bst_tree.hpp"
-using namespace std;
 
 template <class T>
 class avl : public bst_tree<T> {
  public:
-  class Node {
+  class Node : bst_tree<T>::Node {
    public:
     friend class avl;
 
-    Node(){};
     Node(T _val)
         : val(_val),
           Parent(nullptr),
           L_tree(nullptr),
           R_tree(nullptr),
           height(1){};
-    Node(T _val, Node* L_tree, Node* R_tree)
-        : val(_val),
-          L_tree(L_tree),
-          R_tree(R_tree),
-          height(get_height(*this)){};
-
-    T& operator*() { return val; }
-
+    Node* get_parent() { return this->Parent; }
+    Node* get_L_tree() { return this->L_tree; }
+    Node* get_R_tree() { return this->R_tree; }
+    Node* get_height() { return this->height; }
    private:
     T val;
     Node* Parent;
@@ -36,10 +30,14 @@ class avl : public bst_tree<T> {
   class Iterator : public bst_tree<T>::Iterator {
     friend class avl;
 
+    Iterator(Node* _node) : m_node(_node) {}
+
    private:
     Node* m_node;
   };
 
+  Iterator begin() const { return Iterator(find_min(root)); }
+  Iterator end() const { return Iterator(nullptr); }
 
   void insert(Node* leaf, const T& _val) {
     Node* p = new Node(_val);
@@ -89,6 +87,8 @@ class avl : public bst_tree<T> {
   }
 
   void by_plus() {
+    using std::cout;
+
     for (auto it = begin(); it != end(); it++) {
       cout << "Key: " << *it << " ";
       Node* parent = it.m_node->Parent;
@@ -99,10 +99,9 @@ class avl : public bst_tree<T> {
       } else {
         cout << "Root";
       }
-
-      cout << endl;
+      cout << std::endl;
     }
-    cout << endl;
+    cout << std::endl;
   }
 
   unsigned char get_height(Node* leaf) { return leaf ? leaf->height : 0; }
@@ -166,7 +165,7 @@ class avl : public bst_tree<T> {
 // ===========================================================================
 // ===========================================================================
 // ===========================================================================
-
+/*
 template <class T>
 class avl_tree {
  public:
@@ -535,3 +534,5 @@ class avl_tree {
   Node* root;
   int size;
 };
+
+*/
