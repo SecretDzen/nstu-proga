@@ -189,10 +189,10 @@ class bst_tree {
       (node == parent->L_tree ? parent->L_tree : parent->R_tree) = nullptr;
     } else if (node->L_tree && node->R_tree) {
       Node* newParent = find_min(node->R_tree);
-
       newParent->L_tree = node->L_tree;
       newParent->L_tree->Parent = newParent;
       node->R_tree->Parent = parent;
+
       if (parent) {
         (node == parent->L_tree ? parent->L_tree : parent->R_tree) =
             node->R_tree;

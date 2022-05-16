@@ -80,6 +80,26 @@ void show_size() {
   cout << "=================" << endl;
 }
 
+void it_by_plus() {
+  cout << "=================" << endl;
+  if (!one.is_empty()) {
+  one.by_plus();
+  } else {
+    cout << "Empty tree" << endl;
+  }
+  cout << "=================" << endl;
+}
+
+void it_by_minus() {
+  cout << "=================" << endl;
+  if (!one.is_empty()) {
+  one.by_minus();
+  } else {
+    cout << "Empty tree" << endl;
+  }
+  cout << "=================" << endl;
+}
+
 void show_wrong() {
   cout << "================================" << endl;
   cout << "You entered wrong key. Try again" << endl;
@@ -148,6 +168,14 @@ void edit_step(int _param) {
       show_size();
       break;
 
+    case 7:
+      it_by_plus();
+      break;
+
+    case 8:
+      it_by_minus();
+      break;
+
     default:
       cout << "Wrong param given" << endl;
       break;
@@ -161,13 +189,15 @@ void show_tree() {
 }
 
 void show_menu() {
-  cout << "===Program menu===" << endl;
+  cout << "=== Program menu ===" << endl;
   cout << "1) Insert Node" << endl;
   cout << "2) Erase Node" << endl;
   cout << "3) Show min key" << endl;
   cout << "4) Show max key" << endl;
   cout << "5) Show root key" << endl;
   cout << "6) Show size" << endl;
+  cout << "7) Show direct Iterator" << endl;
+  cout << "8) Show reversed Iterator" << endl;
   cout << "0) Exit" << endl;
   cout << endl;
 }
