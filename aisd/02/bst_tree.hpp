@@ -18,6 +18,7 @@ class bst_tree {
     T& operator*() { return val; }
     Node* getParent() { return Parent; }
     void setParent(Node* parent) { this->Parent = parent; }
+    T get_val() { return val; }
 
    protected:
     T val;
@@ -32,11 +33,13 @@ class bst_tree {
     friend class bst_tree;
 
     Iterator(Node* _node) : m_node(_node) {}
+    Iterator() : m_node(nullptr) {}
+    Iterator(const Iterator& iter) : m_node(iter.m_node) {}
 
     T& operator*() { return m_node->val; }
     T& operator->() { return &m_node->val; }
 
-    Node* getNode() { return m_node; }
+    Node* get_node() { return m_node; }
 
     Iterator& operator++() {
       if (m_node->R_tree) {
@@ -158,6 +161,15 @@ class bst_tree {
       parent->R_tree = p;
       size++;
     }
+
+    Node* prt = parent;
+
+    while (prt != get_root()) {
+      Node* nextParent = prt->Parent;
+      prt = balance(prt);
+      prt = nextParent;
+    }
+    root = balance(root);
   }
 
   void insert(const T& _val) {
@@ -205,6 +217,16 @@ class bst_tree {
 
     size--;
     delete node;
+
+    Node* prt = pos.m_node->Parent;
+
+    while (prt != get_root()) {
+      Node* nextParent = prt->Parent;
+      prt = balance(prt);
+      prt = nextParent;
+    }
+
+    root = balance(prt);
   }
 
   void inorder(Node* leaf) {
@@ -283,6 +305,9 @@ class bst_tree {
     return *this;
   }
 
+  void set_size(int initial) { return this->size = initial; }
+  void set_root(Node* initial) { root = initial; }
+
   bst_tree() {
     root = nullptr;
     size = 0;
@@ -291,6 +316,72 @@ class bst_tree {
   bst_tree(const bst_tree& src) : bst_tree() { *this = src; }
 
   ~bst_tree() { clear(root); };
+
+    unsigned char get_height(Node* leaf) { return leaf ? leaf->height : 0; }
+
+  int bfactor(Node* leaf) {
+    return get_height(leaf->R_tree) -
+           get_height(leaf->L_tree);
+  }
+
+  void fix_height(Node* leaf) {
+    unsigned char hl = get_height(leaf->L_tree);
+    unsigned char hr = get_height(leaf->R_tree);
+    leaf->height = (hl > hr ? hl : hr) + 1;
+  }
+
+  Node* rotate_right(Node* leaf) {
+    Node* prt = leaf->Parent;
+    Node* p = leaf->L_tree;
+    leaf->L_tree = p->R_tree;
+    if (leaf->L_tree) leaf->L_tree->setParent(leaf);
+    p->R_tree = leaf;
+    fix_height(leaf);
+    fix_height(p);
+
+    if (prt) {
+      prt->L_tree == leaf ? prt->L_tree = p : prt->R_tree = p;
+    }
+
+    p->Parent = leaf->Parent;
+    leaf->Parent = p;
+    return p;
+  }
+
+  Node* rotate_left(Node* leaf) {
+    Node* prt = leaf->Parent;
+    Node* p = leaf->R_tree;
+    leaf->R_tree = p->L_tree;
+    if (leaf->R_tree) leaf->R_tree->setParent(leaf);
+    p->L_tree = leaf;
+    fix_height(leaf);
+    fix_height(p);
+
+    if (prt) {
+      prt->R_tree == leaf ? prt->R_tree = p : prt->L_tree = p;
+    }
+
+    p->Parent = prt;
+    leaf->Parent = p;
+    return p;
+  }
+
+  Node* balance(Node* leaf) {
+    fix_height(leaf);
+
+    if (bfactor(leaf) > 1) {
+      if (bfactor(leaf->R_tree) < 0)
+        leaf->R_tree = rotate_right(leaf->R_tree);
+      return rotate_left(leaf);
+    }
+
+    if (bfactor(leaf) < -1) {
+      if (bfactor(leaf->L_tree) > 0)
+        leaf->L_tree = rotate_left(leaf->L_tree);
+      return rotate_right(leaf);
+    }
+    return leaf;
+  }
 
  protected:
   Node* root;

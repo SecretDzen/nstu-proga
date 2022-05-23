@@ -4,135 +4,72 @@
 template <class T>
 class avl : public bst_tree<T> {
  public:
-  using bst_tree<T>::bst_tree;
-  class Node : public bst_tree<T>::Node {
+  class avlNode : public bst_tree<T>::Node {
    public:
     friend class avl;
-    using bst_tree<T>::Node::Node;
+    avlNode() { bst_tree<T>::Node(); }
+    avlNode(T _val) { bst_tree<T>::Node(_val); }
+
+    T get_val() { return bst_tree<T>::Node::get_val(); }
   };
 
-  class Iterator : public bst_tree<T>::Iterator {
+  class avlIterator : public bst_tree<T>::Iterator {
+   public:
     friend class avl;
-    using bst_tree<T>::Iterator::Iterator;
+    avlIterator(avlNode* _node) { bst_tree<T>::Iterator(_node); }
+
+    avlNode get_node() { return bst_tree<T>::Iterator::get_node(); }
   };
 
-  Iterator begin() const { return Iterator(this->find_min(root)); }
-  Iterator end() const { return Iterator(nullptr); }
-
-  Iterator find(const T& _val) {
-    for (auto iter = begin(); iter != end(); iter++) {
-      if (*iter == _val) return iter;
-    }
-    return end();
+  avlIterator begin() const { return bst_tree<T>::begin(); }
+  avlIterator end() const { return bst_tree<T>::end(); }
+  avlIterator find(const T& _val) {
+    return  (avlIterator)bst_tree<T>::find(_val).get_node();
   }
 
-  void insert(Node* leaf, const T& _val) {
-    Node* p = new Node(_val);
-    Node* child = leaf;
-    Node* parent = nullptr;
+  avlNode* get_root() { return (avlNode*)bst_tree<T>::get_root(); }
 
-    while (child) {
-      parent = child;
-      if (_val < child->val) {
-        child = (Node*)child->L_tree;
-      } else if (_val > child->val) {
-        child = (Node*)child->R_tree;
-      } else {
-        break;
-      }
-    }
+  void insert(avlNode* leaf, const T& _val) {
+    bst_tree<T>::insert(leaf, _val);
+    avlNode* prt = (avlNode*)bst_tree<T>::find(_val).m_node;
 
-    p->Parent = parent;
-
-    if (_val < parent->val) {
-      parent->L_tree = p;
-      size++;
-    } else if (_val > parent->val) {
-      parent->R_tree = p;
-      size++;
-    }
-
-    Node* prt = parent;
-
-    while (prt != root) {
-      Node* nextParent = (Node*)prt->Parent;
+    while (prt != bst_tree<T>::get_root()) {
+      avlNode* nextParent = (avlNode*)prt->Parent;
       prt = balance(prt);
       prt = nextParent;
     }
 
-    root = balance(prt);
+    bst_tree<T>::set_root(balance(prt));
   }
 
-  void insert(const T& _val) {
-    if (!root) {
-      root = new Node(_val);
-      root->Parent = nullptr;
-      size++;
-    } else {
-      insert(root, _val);
-    }
-  }
+  void insert(const T& _val) { bst_tree<T>::insert(_val); }
 
   void erase(const T& value) { erase(find(value)); }
 
-  void erase(Iterator pos) {
-    if (pos == end()) return;
+  void erase(avlIterator pos) {
+    bst_tree<T>::erase(pos);
+    avlNode* prt = (avlNode*)pos.m_node->getParent();
 
-    Node* node = (Node*)pos.m_node;
-    Node* parent = (Node*)node->Parent;
-    int cleared = 0;
-
-    if (!parent) {
-      if (root->R_tree) root = (Node*)root->R_tree;
-      if (root->L_tree) root = (Node*)root->L_tree;
-      if (!root->L_tree && !root->R_tree) cleared = 1;
-    }
-
-    if (!node->L_tree && !node->R_tree && !cleared) {
-      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = nullptr;
-    } else if (node->L_tree && node->R_tree) {
-      Node* newParent = (Node*)this->find_min(node->R_tree);
-
-      newParent->L_tree = node->L_tree;
-      newParent->L_tree->setParent(newParent);
-      node->R_tree->setParent(parent);
-      if (parent) {
-        (node == parent->L_tree ? parent->L_tree : parent->R_tree) =
-            node->R_tree;
-      }
-    } else if (parent) {
-      Node* child =
-          (Node*)(node->L_tree == nullptr ? node->R_tree : node->L_tree);
-      child->Parent = parent;
-      (node == parent->L_tree ? parent->L_tree : parent->R_tree) = child;
-    }
-
-    size--;
-    delete node;
-
-    Node* prt = parent;
-
-    while (prt != root) {
-      Node* nextParent = (Node*)prt->Parent;
+    while (prt != bst_tree<T>::get_root()) {
+      avlNode* nextParent = (avlNode*)prt->Parent;
       prt = balance(prt);
       prt = nextParent;
     }
-
-    root = balance(prt);
+    bst_tree<T>::set_root(balance(prt));
   }
 
-  int get_size() { return size; }
-  Node* get_root() { return !root ? nullptr : root; }
+  int get_size() { return bst_tree<T>::get_size(); }
 
   void by_plus() {
     using std::cout;
-    for (auto it = begin(); it != end(); it++) {
+    for (auto it = bst_tree<T>::begin(); it != bst_tree<T>::end(); it++) {
       cout << "Key: " << *it << " ";
-      Node* parent = (Node*)it.m_node->getParent();
+      avlNode* thisNode = (avlNode*)it.get_node();
+      avlNode* parent = (avlNode*)thisNode->getParent();
 
       if (parent) {
-        if (parent->R_tree == it.m_node) cout << "Right child";
-        if (parent->L_tree == it.m_node) cout << "Left child";
+        if (parent->R_tree == it.get_node()) cout << "Right child";
+        if (parent->L_tree == it.get_node()) cout << "Left child";
       } else {
         cout << "Root";
       }
@@ -141,21 +78,22 @@ class avl : public bst_tree<T> {
     cout << std::endl;
   }
 
-  unsigned char get_height(Node* leaf) { return leaf ? leaf->height : 0; }
+  unsigned char get_height(avlNode* leaf) { return leaf ? leaf->height : 0; }
 
-  int bfactor(Node* leaf) {
-    return get_height((Node*)leaf->R_tree) - get_height((Node*)leaf->L_tree);
+  int bfactor(avlNode* leaf) {
+    return get_height((avlNode*)leaf->R_tree) -
+           get_height((avlNode*)leaf->L_tree);
   }
 
-  void fix_height(Node* leaf) {
-    unsigned char hl = get_height((Node*)leaf->L_tree);
-    unsigned char hr = get_height((Node*)leaf->R_tree);
+  void fix_height(avlNode* leaf) {
+    unsigned char hl = get_height((avlNode*)leaf->L_tree);
+    unsigned char hr = get_height((avlNode*)leaf->R_tree);
     leaf->height = (hl > hr ? hl : hr) + 1;
   }
 
-  Node* rotate_right(Node* leaf) {
-    Node* prt = (Node*)leaf->Parent;
-    Node* p = (Node*)leaf->L_tree;
+  avlNode* rotate_right(avlNode* leaf) {
+    avlNode* prt = (avlNode*)leaf->Parent;
+    avlNode* p = (avlNode*)leaf->L_tree;
     leaf->L_tree = p->R_tree;
     if (leaf->L_tree) leaf->L_tree->setParent(leaf);
     p->R_tree = leaf;
@@ -171,39 +109,40 @@ class avl : public bst_tree<T> {
     return p;
   }
 
-  Node* rotate_left(Node* leaf) {
-    Node* p = (Node*)leaf->R_tree;
+  avlNode* rotate_left(avlNode* leaf) {
+    avlNode* prt = (avlNode*)leaf->Parent;
+    avlNode* p = (avlNode*)leaf->R_tree;
     leaf->R_tree = p->L_tree;
     if (leaf->R_tree) leaf->R_tree->setParent(leaf);
     p->L_tree = leaf;
     fix_height(leaf);
     fix_height(p);
 
-    p->Parent = leaf->Parent;
+    if (prt) {
+      prt->R_tree == leaf ? prt->R_tree = p : prt->L_tree = p;
+    }
+
+    p->Parent = prt;
     leaf->Parent = p;
     return p;
   }
 
-  Node* balance(Node* leaf) {
+  avlNode* balance(avlNode* leaf) {
     fix_height(leaf);
 
     if (bfactor(leaf) > 1) {
-      if (bfactor((Node*)leaf->R_tree) < 0)
-        leaf->R_tree = rotate_right((Node*)leaf->R_tree);
+      if (bfactor((avlNode*)leaf->R_tree) < 0)
+        leaf->R_tree = rotate_right((avlNode*)leaf->R_tree);
       return rotate_left(leaf);
     }
 
     if (bfactor(leaf) < -1) {
-      if (bfactor((Node*)leaf->L_tree) > 0)
-        leaf->L_tree = rotate_left((Node*)leaf->L_tree);
+      if (bfactor((avlNode*)leaf->L_tree) > 0)
+        leaf->L_tree = rotate_left((avlNode*)leaf->L_tree);
       return rotate_right(leaf);
     }
     return leaf;
   }
-
- protected:
-  Node* root;
-  int size;
 };
 
 // ===========================================================================

@@ -1,18 +1,14 @@
 #include "avl_tree.hpp"
+using namespace std;
 
 avl<int> one;
 int main() {
   one.insert(10);
-  one.insert(12);
-  one.insert(13);
-  one.insert(14);
+  one.insert(5);
+  one.insert(3);
+  cout << one.get_size() << endl;
+  auto rt = one.get_root();
+  cout << rt->get_val() << endl;
   one.by_plus();
-
-  one.display();
-
-
-  std::cout << one.get_size() << std::endl;
-  one.is_empty();
-
   return 0;
 }
