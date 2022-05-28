@@ -1,9 +1,14 @@
 CC=g++
-CFLAGS=-Wall -Wextra -Werror
+CFLAGS=-Wall -Wextra -Werror -g3 -ggdb
 BUILD_PATH=build/
 
+
+l3_test2:
+	$(CC) $(CFLAGS) 03_2/test.cpp -o $(BUILD_PATH)prog_l3.out
+	$(BUILD_PATH)prog_l3.out
+
 l3_test:
-	$(CC) $(CFLAGS) 03/test.cpp -o $(BUILD_PATH)prog_l3.out
+	$(CC) $(CFLAGS) 03/newtest.cpp -o $(BUILD_PATH)prog_l3.out
 	$(BUILD_PATH)prog_l3.out
 
 l3:

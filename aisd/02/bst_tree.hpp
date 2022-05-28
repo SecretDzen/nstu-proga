@@ -1,3 +1,4 @@
+#include <climits>
 #include <iostream>
 
 template <class T>
@@ -16,9 +17,18 @@ class bst_tree {
           height(1){};
 
     T& operator*() { return val; }
-    Node* getParent() { return Parent; }
-    void setParent(Node* parent) { this->Parent = parent; }
     T get_val() { return val; }
+    Node* getParent() { return Parent; }
+    Node* get_R() { return R_tree; }
+    Node* get_L() { return L_tree; }
+    Node* get_P() { return Parent; }
+    unsigned char get_H() { return height; }
+
+    void set_H(unsigned char newH) { this->height = newH; }
+    void setParent(Node* parent) { this->Parent = parent; }
+    void set_R(Node* newR) { this->R_tree = newR; }
+    void set_L(Node* newL) { this->L_tree = newL; }
+    void set_P(Node* newP) { this->Parent = newP; }
 
    protected:
     T val;
@@ -33,8 +43,6 @@ class bst_tree {
     friend class bst_tree;
 
     Iterator(Node* _node) : m_node(_node) {}
-    Iterator() : m_node(nullptr) {}
-    Iterator(const Iterator& iter) : m_node(iter.m_node) {}
 
     T& operator*() { return m_node->val; }
     T& operator->() { return &m_node->val; }
@@ -42,6 +50,8 @@ class bst_tree {
     Node* get_node() { return m_node; }
 
     Iterator& operator++() {
+      if (*this == nullptr) throw std::overflow_error("Haha");
+
       if (m_node->R_tree) {
         m_node = m_node->R_tree;
 
@@ -66,6 +76,8 @@ class bst_tree {
     }
 
     Iterator operator++(int) {
+      if (*this == nullptr) throw std::overflow_error("Haha");      
+
       auto old = *this;
       ++(*this);
       return old;
@@ -114,7 +126,8 @@ class bst_tree {
   Iterator it_root() const { return Iterator(root); }
 
   Iterator find(const T& _val) {
-    for (auto iter = begin(); iter != end(); iter++) {
+    steps = 0;
+    for (auto iter = begin(); iter != end(); iter++, steps++) {
       if (*iter == _val) return iter;
     }
     return end();
@@ -125,7 +138,6 @@ class bst_tree {
 
   Node* find_min(Node* leaf) const {
     while (leaf && leaf->L_tree) leaf = leaf->L_tree;
-
     return leaf;
   }
 
@@ -137,11 +149,13 @@ class bst_tree {
   Node* get_root() { return !root ? nullptr : root; }
 
   void insert(Node* leaf, const T& _val) {
+    steps = 1;
     Node* p = new Node(_val);
     Node* child = leaf;
     Node* parent = nullptr;
 
     while (child) {
+      steps++;
       parent = child;
       if (_val < child->val) {
         child = child->L_tree;
@@ -161,19 +175,12 @@ class bst_tree {
       parent->R_tree = p;
       size++;
     }
-
-    Node* prt = parent;
-
-    while (prt != get_root()) {
-      Node* nextParent = prt->Parent;
-      prt = balance(prt);
-      prt = nextParent;
-    }
-    root = balance(root);
   }
 
   void insert(const T& _val) {
+    steps = 0;
     if (!root) {
+      steps = 1;
       root = new Node(_val);
       root->Parent = nullptr;
       size++;
@@ -182,7 +189,10 @@ class bst_tree {
     }
   }
 
-  void erase(const T& value) { erase(find(value)); }
+  void erase(const T& value) {
+    steps = 0;
+    erase(find(value));
+  }
 
   void erase(Iterator pos) {
     if (pos == end()) return;
@@ -217,16 +227,6 @@ class bst_tree {
 
     size--;
     delete node;
-
-    Node* prt = pos.m_node->Parent;
-
-    while (prt != get_root()) {
-      Node* nextParent = prt->Parent;
-      prt = balance(prt);
-      prt = nextParent;
-    }
-
-    root = balance(prt);
   }
 
   void inorder(Node* leaf) {
@@ -275,6 +275,7 @@ class bst_tree {
 
   const T& get_val(Node* leaf) { return leaf->val; }
   const T& get_val(Iterator leaf) { return leaf.m_node->val; }
+  int CountNodes() { return steps; }
 
   int get_size() { return size; }
   int is_empty() { return root == nullptr; }
@@ -305,85 +306,18 @@ class bst_tree {
     return *this;
   }
 
-  void set_size(int initial) { return this->size = initial; }
-  void set_root(Node* initial) { root = initial; }
-
   bst_tree() {
     root = nullptr;
     size = 0;
+    steps = 0;
   };
 
   bst_tree(const bst_tree& src) : bst_tree() { *this = src; }
 
   ~bst_tree() { clear(root); };
 
-    unsigned char get_height(Node* leaf) { return leaf ? leaf->height : 0; }
-
-  int bfactor(Node* leaf) {
-    return get_height(leaf->R_tree) -
-           get_height(leaf->L_tree);
-  }
-
-  void fix_height(Node* leaf) {
-    unsigned char hl = get_height(leaf->L_tree);
-    unsigned char hr = get_height(leaf->R_tree);
-    leaf->height = (hl > hr ? hl : hr) + 1;
-  }
-
-  Node* rotate_right(Node* leaf) {
-    Node* prt = leaf->Parent;
-    Node* p = leaf->L_tree;
-    leaf->L_tree = p->R_tree;
-    if (leaf->L_tree) leaf->L_tree->setParent(leaf);
-    p->R_tree = leaf;
-    fix_height(leaf);
-    fix_height(p);
-
-    if (prt) {
-      prt->L_tree == leaf ? prt->L_tree = p : prt->R_tree = p;
-    }
-
-    p->Parent = leaf->Parent;
-    leaf->Parent = p;
-    return p;
-  }
-
-  Node* rotate_left(Node* leaf) {
-    Node* prt = leaf->Parent;
-    Node* p = leaf->R_tree;
-    leaf->R_tree = p->L_tree;
-    if (leaf->R_tree) leaf->R_tree->setParent(leaf);
-    p->L_tree = leaf;
-    fix_height(leaf);
-    fix_height(p);
-
-    if (prt) {
-      prt->R_tree == leaf ? prt->R_tree = p : prt->L_tree = p;
-    }
-
-    p->Parent = prt;
-    leaf->Parent = p;
-    return p;
-  }
-
-  Node* balance(Node* leaf) {
-    fix_height(leaf);
-
-    if (bfactor(leaf) > 1) {
-      if (bfactor(leaf->R_tree) < 0)
-        leaf->R_tree = rotate_right(leaf->R_tree);
-      return rotate_left(leaf);
-    }
-
-    if (bfactor(leaf) < -1) {
-      if (bfactor(leaf->L_tree) > 0)
-        leaf->L_tree = rotate_left(leaf->L_tree);
-      return rotate_right(leaf);
-    }
-    return leaf;
-  }
-
  protected:
   Node* root;
   int size;
+  int steps;
 };
