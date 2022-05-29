@@ -125,6 +125,7 @@ class bst_tree {
   Iterator rend() const { return Iterator(nullptr); }
   Iterator it_root() const { return Iterator(root); }
 
+#ifndef RECURSIVE
   Iterator find(const T& _val) {
     steps = 0;
     for (auto iter = begin(); iter != end(); iter++, steps++) {
@@ -132,6 +133,20 @@ class bst_tree {
     }
     return end();
   }
+#else
+  Iterator find(const T& _val) {
+      steps = -1;
+      return find(root, _val);
+  }
+
+  Iterator find(Node* node, const T& _val) {
+      steps++;
+      if (node == nullptr) return end();
+      if (node->val > _val) return find(node->R_tree, _val);
+      if (node->val < _val) return find(node->L_tree, _val);
+      return Iterator(node);
+  }
+#endif
 
   Node* find_min() const { return find_min(root); }
   Node* find_max() const { return find_max(root); }
@@ -148,6 +163,7 @@ class bst_tree {
 
   Node* get_root() { return !root ? nullptr : root; }
 
+#ifndef RECURSIVE
   void insert(Node* leaf, const T& _val) {
     steps = 1;
     Node* p = new Node(_val);
@@ -176,6 +192,24 @@ class bst_tree {
       size++;
     }
   }
+#elif
+  void insert(Node* node, const T& _val) {
+    steps++;
+
+    if (node->val == _val) return;
+    else if (node->val < _val) {
+        if (node->L_tree) return insert(node->L_tree, _val);
+        node->L_tree = new Node(_val);
+        node->L_tree->Parent = node;
+    } else {
+        if (node->R_tree) return insert(node->R_tree, _val);
+        node->R_tree = new Node(_val);
+        node->R_tree->Parent = node;
+    }
+
+    size++;
+  }
+#endif
 
   void insert(const T& _val) {
     steps = 0;
