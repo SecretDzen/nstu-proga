@@ -36,6 +36,7 @@ CREATE TABLE l1_v4.author (
 
 CREATE TABLE l1_v4.book (
     id          SERIAL,
+    name        VARCHAR,
     circulation INT NOT NULL,
     authorID    INT NOT NULL,
     genreID     INT NOT NULL,
