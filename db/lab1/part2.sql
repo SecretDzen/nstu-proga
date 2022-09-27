@@ -63,8 +63,8 @@ INSERT INTO
     (name, circulation, authorID, genreID, publHouseID)
 VALUES
     ('1985', 65000, 1, 1, 1),
-    ('Tarrok and his fish', 23000, 2, 2, 2),
-    ('Kasiposha adventure', 55000, 3, 3, 3),
+    ('Tarrok and his fish', 23000, 3, 3, 3),
+    ('Kasiposha adventure', 55000, 2, 2, 2),
     ('Magistrate 2020', 11000, 4, 4, 4),
     ('In Search Of Lost Keys', 200000, 5, 5, 5),
     ('Moby Don key-cat', 51000, 6, 6, 6),
