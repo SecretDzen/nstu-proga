@@ -1,12 +1,35 @@
-CREATE OR REPLACE VIEW l1_v4.info AS (
-SELECT
-    l1_v4.book.name AS bookName,
-    l1_v4.genre.name AS bookGenre,
-    l1_v4.author.name AS authorName,
-    l1_v4.city.name AS authorCity
-FROM
+ALTER TABLE
     l1_v4.book
-    LEFT JOIN l1_v4.author ON l1_v4.book.authorID = l1_v4.author.id
-    LEFT JOIN l1_v4.city ON l1_v4.author.cityID = l1_v4.city.id
-    LEFT JOIN l1_v4.genre ON l1_v4.book.genreID = l1_v4.genre.id
-)
+ADD 
+bestseller boolean;
+
+UPDATE
+    l1_v4.book
+SET
+    bestseller = false;
+
+UPDATE
+    l1_v4.book
+SET
+    bestseller = true
+WHERE 
+    circulation > 50000;
+
+CREATE TYPE l1_v4.publ_house_status as enum ('OPEN', 'CLOSED');
+
+ALTER TABLE
+    l1_v4.publHouse
+ADD
+    publStatus l1_v4.publ_house_status;
+
+UPDATE
+    l1_v4.publHouse
+SET
+    publStatus = 'OPEN';
+
+UPDATE
+    l1_v4.publHouse
+SET
+    publStatus = 'CLOSED'
+WHERE
+    id = 5;
