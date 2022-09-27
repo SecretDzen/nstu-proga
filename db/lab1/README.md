@@ -22,18 +22,18 @@
 
 ЕСЛИ ПОЛЬЗУЕМСЯ ВООБЩЕ ПЕРВЫЙ РАЗ
 1. ``` $ sudo su - postgres ```  
-  1. ``` $ initdb --locale en_US.UTF-8 -D /var/lib/postgres/data ```  
+    1. ``` $ initdb --locale en_US.UTF-8 -D /var/lib/postgres/data ```  
 
 1. Создаем ручками бд
-  1. ``` $ sudo -su postgres ```
-  2. ``` # createdb labs_db ```
-  3. ``` # exit ```
+    1. ``` $ sudo -su postgres ```
+    2. ``` # createdb labs_db ```
+    3. ``` # exit ```
 2. Последовательно выполняем:  
-  1. ``` $ make part1 ```
-  2. ``` $ make part2 ```
-  3. ``` $ make part3 ```
-  > Каждая команда выполняет части создания/заполнения/объединения соответственно
-  4. Если хотите создать всё быстро - ``` $ make all ```
+    1. ``` $ make part1 ```
+    2. ``` $ make part2 ```
+    3. ``` $ make part3 ```
+    > Каждая команда выполняет части создания/заполнения/объединения соответственно
+    4. Если хотите создать всё быстро - ``` $ make all ```
 3. Для просмотра БД:
     1. ``` sudo -su postgres ```
     2. ``` psql ```
