@@ -1,5 +1,5 @@
 INSERT INTO
-    l1_v4.city
+    v4.city
     (name)
 VALUES
     ('Moscow'),
@@ -14,7 +14,7 @@ VALUES
     ('Perm');
 
 INSERT INTO
-    l1_v4.genre
+    v4.genre
     (name)
 VALUES
     ('Romance novel'),
@@ -29,7 +29,7 @@ VALUES
     ('Dystopia');
 
 INSERT INTO
-    l1_v4.publHouse
+    v4.publHouse
     (name, address, cityID)
 VALUES
     ('Romanco', 'Mira 14/2', 1),
@@ -44,7 +44,7 @@ VALUES
     ('Books&Cooks', 'Dumskaya 9', 10);
 
 INSERT INTO
-    l1_v4.author
+    v4.author
     (name, cityID)
 VALUES
     ('Mokan', 1),
@@ -59,7 +59,7 @@ VALUES
     ('Isaev', 10);
 
 INSERT INTO
-    l1_v4.book
+    v4.book
     (name, circulation, authorID, genreID, publHouseID)
 VALUES
     ('1985', 65000, 1, 1, 1),

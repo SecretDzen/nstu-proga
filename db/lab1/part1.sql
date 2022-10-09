@@ -1,40 +1,40 @@
-DROP SCHEMA IF EXISTS l1_v4 CASCADE;
-CREATE SCHEMA l1_v4;
+DROP SCHEMA IF EXISTS v4 CASCADE;
+CREATE SCHEMA v4;
 
-CREATE TABLE l1_v4.city (
+CREATE TABLE v4.city (
     id   SERIAL,
     name VARCHAR NOT NULL,
 
     PRIMARY KEY (id)
 );
 
-CREATE TABLE l1_v4.genre (
+CREATE TABLE v4.genre (
     id   SERIAL,
     name VARCHAR NOT NULL,
 
     PRIMARY KEY (id)
 );
 
-CREATE TABLE l1_v4.publHouse (
+CREATE TABLE v4.publHouse (
     id      SERIAL,
     name    VARCHAR NOT NULL,
     address VARCHAR NOT NULL,
     cityID  INT NOT NULL,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (cityID) REFERENCES l1_v4.city(id)
+    FOREIGN KEY (cityID) REFERENCES v4.city(id)
 );
 
-CREATE TABLE l1_v4.author (
+CREATE TABLE v4.author (
     id     SERIAL,
     name   VARCHAR NOT NULL,
     cityID INT NOT NULL, 
 
     PRIMARY KEY (id),
-    FOREIGN KEY (cityID) REFERENCES l1_v4.city(id)
+    FOREIGN KEY (cityID) REFERENCES v4.city(id)
 );
 
-CREATE TABLE l1_v4.book (
+CREATE TABLE v4.book (
     id          SERIAL,
     name        VARCHAR,
     circulation INT NOT NULL,
@@ -43,9 +43,9 @@ CREATE TABLE l1_v4.book (
     publHouseID INT NOT NULL,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (authorID)    REFERENCES l1_v4.author(id),
-    FOREIGN KEY (genreID)     REFERENCES l1_v4.genre(id),
-    FOREIGN KEY (publHouseID) REFERENCES l1_v4.publHouse(id)
+    FOREIGN KEY (authorID)    REFERENCES v4.author(id),
+    FOREIGN KEY (genreID)     REFERENCES v4.genre(id),
+    FOREIGN KEY (publHouseID) REFERENCES v4.publHouse(id)
 );
 
 SET timezone = 'Asia/Novosibirsk';

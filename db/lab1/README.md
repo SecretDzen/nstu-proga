@@ -40,5 +40,5 @@
     1. ``` sudo -su postgres ```
     2. ``` psql ```
     3. ``` \c labs_db ```
-    4. ``` SELECT * FROM l1_v4.info; ```
+    4. ``` SELECT * FROM v4.info; ```
     
