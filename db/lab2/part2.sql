@@ -2,7 +2,7 @@ DROP SCHEMA IF EXISTS v4 CASCADE;
 CREATE SCHEMA IF NOT EXISTS v4 AUTHORIZATION ex4to;
 
 
-CREATE TYPE genre_name AS ENUM ('detective', 'science fiction', 'comedy', 'melodrama', 'thriller');
+CREATE TYPE v4.genre_name AS ENUM ('detective', 'science fiction', 'comedy', 'melodrama', 'thriller');
 
 CREATE TABLE v4.city (
     id   SERIAL,

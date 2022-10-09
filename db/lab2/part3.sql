@@ -17,16 +17,11 @@ INSERT INTO
     v4.genre
     (name)
 VALUES
-    ('Romance novel'),
-    ('Science fiction'),
-    ('Mystery'),
-    ('Fantasy'),
-    ('Horror'),
-    ('Fiction'),
-    ('Historical Fiction'),
-    ('Thriller'),
-    ('Biography'),
-    ('Dystopia');
+    ('detective'),
+    ('science fiction'),
+    ('comedy'),
+    ('melodrama'),
+    ('thriller');
 
 INSERT INTO
     v4.publHouse
@@ -60,15 +55,34 @@ VALUES
 
 INSERT INTO
     v4.book
-    (name, circulation, authorID, genreID, publHouseID)
+    (name, circulation, release_date, authorID, genreID, publHouseID)
 VALUES
-    ('1985', 65000, 1, 1, 1),
-    ('Tarrok and his fish', 23000, 3, 3, 3),
-    ('Kasiposha adventure', 55000, 2, 2, 2),
-    ('Magistrate 2020', 11000, 4, 4, 4),
-    ('In Search Of Lost Keys', 200000, 5, 5, 5),
-    ('Moby Don key-cat', 51000, 6, 6, 6),
-    ('War and War', 67000, 7, 7, 7),
-    ('IKEA Tutorial', 42500, 8, 8, 8),
-    ('My cat - Vengeance', 25000, 9, 9, 9),
-    ('Catch-44', 69000, 10, 10, 10);
+    ('1985', 65000, '2001-10-28', 1, 1, 1),
+    ('Tarrok and his fish', 23000, '2020-05-11', 3, 3, 3),
+    ('Kasiposha adventure', 55000, '2021-01-20', 2, 2, 2),
+    ('Magistrate 2020', 11000, '1999-05-18', 4, 4, 4),
+    ('In Search Of Lost Keys', 200000, '1985-02-24', 5, 5, 5),
+    ('Moby Don key-cat', 51000, '2001-11-01', 6, 1, 6),
+    ('War and War', 67000, '2005-09-30' ,7, 2, 7),
+    ('IKEA Tutorial', 42500, '2009-04-11' ,8, 3, 8),
+    ('My cat - Vengeance', 25000, '2022-03-08' ,9, 4, 9),
+    ('Catch-44', 69000, '2019-05-28', 10, 5, 10);
+
+-- Incorrect inserts
+INSERT INTO
+    v4.book
+    (name, circulation, release_date, authorID, genreID, publHouseID)
+VALUES
+    ('Final Fantasy', 45000, '2023-10-28', 1, 1, 1);
+
+INSERT INTO
+    v4.book
+    (name, circulation, release_date, authorID, genreID, publHouseID)
+VALUES
+    ('Find the Mise', 20, '2019-05-28', 10, 5, 10);
+
+INSERT INTO
+    v4.genre
+    (name)
+VALUES
+    ('Not a genre');

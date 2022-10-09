@@ -1,5 +1,3 @@
-ALTER DATABASE labs_db OWNER TO ex4to;
-
 DO
 $do$
 BEGIN
@@ -12,3 +10,5 @@ BEGIN
     END IF;
 END
 $do$;
+
+ALTER DATABASE labs_db OWNER TO ex4to;
