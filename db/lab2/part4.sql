@@ -4,6 +4,7 @@ SELECT
     v4.genre.name AS bookGenre,
     v4.book.release_date AS release_date,
     v4.book.circulation AS circulation,
+    v4.book.price AS price,
     v4.author.name AS authorName
 FROM
     v4.book

@@ -55,31 +55,37 @@ VALUES
 
 INSERT INTO
     v4.book
-    (name, circulation, release_date, authorID, genreID, publHouseID)
+    (name, circulation, price, release_date, authorID, genreID, publHouseID)
 VALUES
-    ('1985', 65000, '2001-10-28', 1, 1, 1),
-    ('Tarrok and his fish', 23000, '2020-05-11', 3, 3, 3),
-    ('Kasiposha adventure', 55000, '2021-01-20', 2, 2, 2),
-    ('Magistrate 2020', 11000, '1999-05-18', 4, 4, 4),
-    ('In Search Of Lost Keys', 200000, '1985-02-24', 5, 5, 5),
-    ('Moby Don key-cat', 51000, '2001-11-01', 6, 1, 6),
-    ('War and War', 67000, '2005-09-30' ,7, 2, 7),
-    ('IKEA Tutorial', 42500, '2009-04-11' ,8, 3, 8),
-    ('My cat - Vengeance', 25000, '2022-03-08' ,9, 4, 9),
-    ('Catch-44', 69000, '2019-05-28', 10, 5, 10);
+    ('1985', 65000, 250, '2001-10-28', 1, 1, 1),
+    ('Tarrok and his fish', 23000, 180, '2020-05-11', 3, 3, 3),
+    ('Kasiposha adventure', 55000, 660, '2021-01-20', 2, 2, 2),
+    ('Magistrate 2020', 11000, 195, '1999-05-18', 4, 4, 4),
+    ('In Search Of Lost Keys', 200000, 666, '1985-02-24', 5, 5, 5),
+    ('Moby Don key-cat', 51000, 895, '2001-11-01', 6, 1, 6),
+    ('War and War', 67000, 999, '2005-09-30', 7, 2, 7),
+    ('IKEA Tutorial', 42500, 1200, '2009-04-11' ,8, 3, 8),
+    ('My cat - Vengeance', 25000, 1500, '2022-03-08' ,9, 4, 9),
+    ('Catch-44', 69000, 1800, '2019-05-28', 10, 5, 10);
 
 -- Incorrect inserts
 INSERT INTO
     v4.book
-    (name, circulation, release_date, authorID, genreID, publHouseID)
+    (name, circulation, price ,release_date, authorID, genreID, publHouseID)
 VALUES
-    ('Final Fantasy', 45000, '2023-10-28', 1, 1, 1);
+    ('Final Fantasy', 45000, 999, '2023-10-28', 1, 1, 1);
 
 INSERT INTO
     v4.book
-    (name, circulation, release_date, authorID, genreID, publHouseID)
+    (name, circulation, price, release_date, authorID, genreID, publHouseID)
 VALUES
-    ('Find the Mise', 20, '2019-05-28', 10, 5, 10);
+    ('Find the Mise', 20, 999, '2019-05-28', 10, 5, 10);
+
+INSERT INTO
+    v4.book
+    (name, circulation, price, release_date, authorID, genreID, publHouseID)
+VALUES
+    ('Find the Mise', 1920, 5, '2019-05-28', 10, 5, 10);
 
 INSERT INTO
     v4.genre
