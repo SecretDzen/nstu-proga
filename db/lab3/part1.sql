@@ -1,36 +1,23 @@
 ALTER TABLE v4.book
-ADD pages INT,
-ADD price INT;
+ADD pages INT;
 
 UPDATE v4.book
-SET pages = 256,
-    price = 180
-WHERE id = 1;
+SET pages = 256 WHERE id = 1;
 
 UPDATE v4.book
-SET pages = 485,
-    price = 615
-WHERE id = 2;
+SET pages = 485 WHERE id = 2;
 
 UPDATE v4.book
-SET pages = 120,
-    price = 1500
-WHERE id = 3;
+SET pages = 120 WHERE id = 3;
 
 UPDATE v4.book
-SET pages = 111,
-    price = 808
-WHERE id = 4;
+SET pages = 111 WHERE id = 4;
 
 UPDATE v4.book
-SET pages = 324,
-    price = 499
-WHERE id = 5;
+SET pages = 324 WHERE id = 5;
 
 UPDATE v4.book
-SET pages = 500,
-    price = 3000
-WHERE id = 6;
+SET pages = 500 WHERE id = 6;
 
 INSERT INTO
     v4.author
