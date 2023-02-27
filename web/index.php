@@ -43,6 +43,20 @@
     padding: 4px;
     font-size: 24px;
   }
+
+  .block__cookies {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .form {
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 </style>
 
 <head>
@@ -63,32 +77,47 @@
 
     <h2 class="h2">PHP. Работа с файлами теневых посылок (cookies) и текстовыми файлами.</h2>
 
-    <section>
+    <section class="block_cookies">
       <?php
       $surname = "преподаватель";
       $course = "не выбран";
 
+      function courseName($name)
+      {
+        if ($name == "web") {
+          return "Веб";
+        } else if ($name == "ls") {
+          return "БЖД";
+        } else if ($name == "economy") {
+          return "Экономика";
+        } else if ($name == "csa") {
+          return "Клиент-сервер";
+        } else if ($name == "compilers") {
+          return "Компиляторы";
+        }
+
+        return "не выбран";
+      }
+
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_POST["surname"]) && isset($_POST["course"])) {
-          $surname = $_POST["surname"];
-          $course = $_POST["course"];
-
-          setcookie("visit", date('d.M.y'), time() + 365 * 24 * 60 * 60);
+          setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
           setcookie("surname", $_POST["surname"], time() + 365 * 24 * 60 * 60);
           setcookie("course", $_POST["course"], time() + 365 * 24 * 60 * 60);
+
           header("location:index.php");
         } else {
           echo "<p>Все поля обязательны к заполнению :)</p>";
         }
       }
 
-
       if (
         isset($_COOKIE["visit"]) && isset($_COOKIE["surname"])
         && isset($_COOKIE["course"])
       ) {
         $surname = $_COOKIE["surname"];
-        $course = $_COOKIE["course"];
+        $course = courseName($_COOKIE["course"]);
+
         echo "<p>Время последнего визита: " . $_COOKIE["visit"] . "</p>";
       }
 
@@ -96,12 +125,14 @@
       echo "<p>Ваш курс: " . $course . ". </p>";
 
       ?>
-      <FORM method="post" action="index.php">
-        <p>Введите вашу фамилию:</p>
-        <P><INPUT TYPE="TEXT" NAME="surname" PLACEHOLDER="Фамилия"></P>
+      <FORM class="form" method="post" action="index.php">
+        <div>
+          <p>Введите вашу фамилию:</p>
+          <P><INPUT TYPE="TEXT" NAME="surname" PLACEHOLDER="Фамилия"></P>
+        </div>
         <p>Ваш курс:</p>
         <div>
-          <INPUT TYPE="radio" id="web" VALUE="web" NAME="course" PLACEHOLDER="Фамилия"></P>
+          <INPUT TYPE="radio" id="web" VALUE="web" NAME="course" PLACEHOLDER="Фамилия">
           <label for="web">Веб</label>
         </div>
         <div>
@@ -121,8 +152,10 @@
           <label for="ls">БЖД</label>
         </div>
 
-        <P><INPUT TYPE="SUBMIT" VALUE="Отправить!"></P>
-        <P><INPUT TYPE="RESET" VALUE="Очистить"></P>
+        <div>
+          <INPUT TYPE="SUBMIT" VALUE="Отправить!">
+          <INPUT TYPE="RESET" VALUE="Очистить">
+        </div>
       </FORM>
     </section>
   </main>
