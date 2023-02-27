@@ -10,15 +10,24 @@
 
     .header {
         background-color: #333;
+        color: #fff;
         padding: 4px;
+        text-align: center;
     }
 
     .h1 {
         font-size: 30px;
+        padding: 4px;
+    }
+
+    .a {
+        border: 1px black solid;
+        border-radius: 50px;
     }
 
     .h2 {
         font-size: 28px;
+        text-align: center;
     }
 
     .img {
@@ -27,6 +36,7 @@
 
     .block__download {
         display: flex;
+        flex-direction: column;
         justify-content: space-around;
         gap: 4px;
         padding: 4px;
@@ -45,8 +55,8 @@
     <main>
         <h2 class="h2">MySQL. Проектирование и реализация базы данных.</h2>
         <section class="block__download">
-            <a>Скачать дамп базы данных</a>
-            <img src="hacker.png" class="img" />
+            <img src="hacker.png" class="img" height="150px" alt="hacker" />
+            <a href="/dump.sql">Скачать дамп базы данных</a>
         </section>
     </main>
 </body>
