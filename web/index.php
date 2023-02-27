@@ -57,7 +57,7 @@
         <h2 class="h2">MySQL. Проектирование и реализация базы данных.</h2>
         <section class="block__download">
             <img src="hacker.png" class="img" alt="hacker" />
-            <a href="/web/dump.sql" target="_blank">Скачать дамп базы данных</a>
+            <a href="/web/dump.sql" target="_blank">Открыть дамп базы данных</a>
         </section>
     </main>
 </body>
