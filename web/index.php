@@ -32,12 +32,13 @@
 
     .img {
         border-radius: 9999px;
+        width: 150px;
     }
 
     .block__download {
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
+        justify-content: center;
         gap: 4px;
         padding: 4px;
         font-size: 24px;
@@ -55,7 +56,7 @@
     <main>
         <h2 class="h2">MySQL. Проектирование и реализация базы данных.</h2>
         <section class="block__download">
-            <img src="hacker.png" class="img" height="150px" alt="hacker" />
+            <img src="hacker.png" class="img" alt="hacker" />
             <a href="/dump.sql">Скачать дамп базы данных</a>
         </section>
     </main>
