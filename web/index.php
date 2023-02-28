@@ -250,6 +250,7 @@
           $fp = @fopen(__DIR__ . "/logs.txt", "a");
           if (!$fp) {
             echo "<p>Возникли неполадки</p>";
+            echo "Путь - " . __DIR__ . "/logs.txt";
           } else {
             $str = "<p>" . date('d/m/y h:m') . "</p>" . "<p>" . $styles . "</p>" . "<p>" . $comment . "</p>";
             fwrite($fp, $str);
