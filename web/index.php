@@ -130,7 +130,7 @@
           return "отсутствует";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST["comments"]) && !isset($_POST["styles"])) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["comments"] = "") {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
 
           if (isset($_POST["flags"])) {
@@ -231,7 +231,7 @@
           return "---";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST["flags"])) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["flags"] = "") {
           if (isset($_POST["styles"])) {
             for ($i = 0; $i < count($_POST["styles"]); $i++) {
               $styles = $styles . stylesName($_POST["styles"][$i]);
@@ -259,7 +259,7 @@
           header("location:index.php");
         }
 
-        if (!file_exists(__DIR__ . "logs.txt")) {
+        if (!file_exists(__DIR__ . "/logs.txt")) {
           echo "<p>Ошибка доступа к журналу</p>";
         } else {
           echo '<h3 class="h2">Журнал</h3>';
