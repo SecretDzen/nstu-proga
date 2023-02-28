@@ -134,7 +134,10 @@
           $flags = "";
 
           for ($i = 0; $i < count($text); $i++) {
-            $flags = $flags . "---" . flagsName($text[$i]);
+            $flags = $flags . flagsName($text[$i]);
+            if ($i != count($text) - 1) {
+              $flags = $flags . "---";
+            }
           }
 
           echo "<p>Время последнего визита: " . $_COOKIE["visit"] . "</p>";
