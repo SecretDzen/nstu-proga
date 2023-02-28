@@ -142,14 +142,18 @@
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-          if (isset($_POST["text"]) && isset($_POST["graphics"]) && isset($_POST["styles"])) {
-            setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
+          setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
+          if (isset($_POST["text"])) {
             setcookie("text", $_POST["text"], time() + 365 * 24 * 60 * 60);
-            setcookie("graphics", $_POST["graphics"], time() + 365 * 24 * 60 * 60);
-            setcookie("styles", $_POST["styles"], time() + 365 * 24 * 60 * 60);
-
-            header("location:index.php");
           }
+          if (isset($_POST["graphics"])) {
+            setcookie("graphics", $_POST["graphics"], time() + 365 * 24 * 60 * 60);
+          }
+          if (isset($_POST["styles"])) {
+            setcookie("styles", $_POST["styles"], time() + 365 * 24 * 60 * 60);
+          }
+
+          header("location:index.php");
         }
 
         if (isset($_COOKIE["visit"]) && isset($_COOKIE["text"]) && isset($_COOKIE["graphics"]) && isset($_COOKIE["styles"])) {
