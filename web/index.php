@@ -130,7 +130,7 @@
           return "отсутствует";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["comment"] == "" && $_POST["styles"] == []) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["comment"] == "" && $_POST["styles"] == [] && $_POST["flags"] != []) {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
 
           if (isset($_POST["flags"])) {
@@ -231,7 +231,7 @@
           return "---";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["flags"] == []) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["flags"] == [] && ($_POST["comment"] != "" || $_POST["styles"] == [])) {
           if (isset($_POST["styles"])) {
             for ($i = 0; $i < count($_POST["styles"]); $i++) {
               $styles = $styles . stylesName($_POST["styles"][$i]);
