@@ -130,7 +130,7 @@
           return "отсутствует";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["comments"] = "") {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["comment"] = "" && $_POST["styles"] = "") {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
 
           if (isset($_POST["flags"])) {
