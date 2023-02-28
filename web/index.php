@@ -122,6 +122,8 @@
 
           if (isset($_POST["flags"])) {
             setcookie("flags", json_encode($_POST["flags"]), time() + 365 * 24 * 60 * 60);
+          } else {
+            setcookie("flags", json_encode([""]), time() + 365 * 24 * 60 * 60);
           }
 
           header("location:index.php");
