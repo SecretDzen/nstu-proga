@@ -20,7 +20,7 @@
   }
 
   .main {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.33);
     height: 100vh;
   }
 
