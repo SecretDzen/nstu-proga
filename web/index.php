@@ -17,6 +17,8 @@
 
   .main {
     background-image: url("./bg.jpg");
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100vh;
   }
 
   .h1 {
