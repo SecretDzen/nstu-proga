@@ -20,7 +20,7 @@
   }
 
   .main {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.8);
     height: 100vh;
   }
 
@@ -145,12 +145,23 @@
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
           if (isset($_POST["text"])) {
             setcookie("text", $_POST["text"], time() + 365 * 24 * 60 * 60);
+          } else {
+            unset($_COOKIE["text"]);
+            setcookie("text", null, -1, '/');
           }
+
           if (isset($_POST["graphics"])) {
             setcookie("graphics", $_POST["graphics"], time() + 365 * 24 * 60 * 60);
+          } else {
+            unset($_COOKIE["graphics"]);
+            setcookie("graphics", null, -1, '/');
           }
+
           if (isset($_POST["styles"])) {
             setcookie("styles", $_POST["styles"], time() + 365 * 24 * 60 * 60);
+          } else {
+            unset($_COOKIE["styles"]);
+            setcookie("styles", null, -1, '/');
           }
 
           header("location:index.php");
