@@ -204,7 +204,7 @@
 
           <div>
             <p>Ваш комментарий: </p>
-            <P><TEXTAREA rows="4" cols="50" TYPE="text" NAME="comment"></P>
+            <P><TEXTAREA rows="4" cols="50" TYPE="text" NAME="comment"></TEXTAREA></P>
           </div>
 
           <div>
@@ -263,7 +263,7 @@
         } else {
           echo '<h3 class="h2">Журнал</h3>';
           echo '<div class="journal"><p>Дата</p><p>Стили</p><p>Комментарий</p>';
-      
+
           $file = fopen(__DIR__ . '/logs.txt', 'r');
 
           while (!feof($file)) {
