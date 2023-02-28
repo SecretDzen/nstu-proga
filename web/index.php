@@ -102,121 +102,59 @@
 
       <section class="block__cookies">
         <?php
-        $text = "не выбран";
-        $graphics = "не выбраны";
-        $styles = "не выбраны";
+        $flags = "отсутствует";
 
-        function textName($name)
+        function flagsName($name)
         {
-          if ($name == "standard") {
-            return "Стандарт";
-          } else if ($name == "bold") {
-            return "Строгий";
-          } else if ($name == "italic") {
-            return "Мягкий";
+          if ($name == "text") {
+            return "Текст";
+          } else if ($name == "graphics") {
+            return "Графика";
+          } else if ($name == "styles") {
+            return "Стили";
           }
 
-          return "не выбран";
-        }
-
-        function graphicsName($name)
-        {
-          if ($name == "minimal") {
-            return "Минимально";
-          } else if ($name == "normal") {
-            return "Нормально";
-          }
-
-          return "не выбраны";
-        }
-
-        function stylesName($name)
-        {
-          if ($name == "noir") {
-            return "Нуар";
-          } else if ($name == "future") {
-            return "Футуризм";
-          }
-
-          return "не выбраны";
+          return "отсутствует";
         }
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
 
-          if (isset($_POST["text"])) {
-            setcookie("text", $_POST["text"], time() + 365 * 24 * 60 * 60);
-          } else {
-            unset($_COOKIE["text"]);
-          }
-
-          if (isset($_POST["graphics"])) {
-            setcookie("graphics", $_POST["graphics"], time() + 365 * 24 * 60 * 60);
-          } else {
-            unset($_COOKIE["graphics"]);
-          }
-
-          if (isset($_POST["styles"])) {
-            setcookie("styles", $_POST["styles"], time() + 365 * 24 * 60 * 60);
-          } else {
-            unset($_COOKIE["styles"]);
+          if (isset($_POST["flags"])) {
+            setcookie("flags", json_encode($_POST["flags"]), time() + 365 * 24 * 60 * 60);
           }
 
           header("location:index.php");
         }
 
-        if (isset($_COOKIE["visit"]) && isset($_COOKIE["text"]) && isset($_COOKIE["graphics"]) && isset($_COOKIE["styles"])) {
-          $text = textName($_COOKIE["text"]);
-          $graphics = graphicsName($_COOKIE["graphics"]);
-          $styles = stylesName($_COOKIE["styles"]);
+        if (isset($_COOKIE["visit"]) && isset($_COOKIE["flags"])) {
+          $text = json_decode($_COOKIE["flags"]);
+          $flags = "";
+
+          for ($i = 0; $i < count($text); $i++) {
+            $flags = $flags . "---" . flagsName($text[$i]);
+          }
 
           echo "<p>Время последнего визита: " . $_COOKIE["visit"] . "</p>";
         }
 
         echo "<h3>Приветствуем, юзер!</h3>";
-        echo "<p>Текст: " . $text . ". </p>";
-        echo "<p>Граф. данные: " . $graphics . ". </p>";
-        echo "<p>Стили офорлмения: " . $styles . ". </p>";
-
+        echo "<p>Ваш выбор: " . $flags . "</p>";
         ?>
         <FORM class="form" method="post" action="index.php">
           <div class="form__flags">
-            <p>Текст:</p>
+            <p>Набор флажков:</p>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="standard" VALUE="standard" NAME="text"></P>
-              <label for="standard">Стандарт</label>
+              <P><INPUT TYPE="checkbox" id="text" VALUE="text" NAME="flags[]"></P>
+              <label for="text">Текст</label>
             </div>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="bold" VALUE="bold" NAME="text"></P>
-              <label for="bold">Строгий</label>
+              <P><INPUT TYPE="checkbox" id="graphics" VALUE="graphics" NAME="flags[]"></P>
+              <label for="graphics">Граф. данные</label>
             </div>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="italic" VALUE="italic" NAME="text"></P>
-              <label for="italic">Мягкий</label>
-            </div>
-          </div>
-
-          <div class="form__flags">
-            <p>Граф. данные:</p>
-            <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="minimal" VALUE="minimal" NAME="graphics"></P>
-              <label for="minimal">Минимально</label>
-            </div>
-            <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="normal" VALUE="normal" NAME="graphics"></P>
-              <label for="normal">Нормально</label>
-            </div>
-          </div>
-
-          <div class="form__flags">
-            <p>Стили оформления:</p>
-            <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="noir" VALUE="noir" NAME="styles"></P>
-              <label for="noir">Нуар</label>
-            </div>
-            <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="future" VALUE="future" NAME="styles"></P>
-              <label for="future">Футуризм</label>
+              <P><INPUT TYPE="checkbox" id="styles" VALUE="styles" NAME="flags[]"></P>
+              <label for="styles">Стили оформления</label>
             </div>
           </div>
 
