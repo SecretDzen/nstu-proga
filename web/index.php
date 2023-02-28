@@ -20,7 +20,7 @@
   }
 
   .main {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.9);
     height: 100vh;
   }
 
@@ -45,19 +45,26 @@
   }
 
   .block__download {
+    font-size: 24px;
+    padding: 4px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    padding: 4px;
-    font-size: 24px;
   }
 
   .block__cookies {
+    padding: 8px;
+
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 4px;
+  }
+
+  .block__text {
+    padding: 8px;
+
   }
 
   .form {
@@ -79,6 +86,11 @@
     align-items: center;
     gap: 2px;
   }
+
+  .journal {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 </style>
 
 <head>
@@ -99,6 +111,7 @@
       </section>
 
       <h2 class="h2">PHP. Работа с файлами теневых посылок (cookies) и текстовыми файлами.</h2>
+      <h3 class="h2">Кукисы</h3>
 
       <section class="block__cookies">
         <?php
@@ -117,7 +130,7 @@
           return "отсутствует";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST["comments"]) && !isset($_POST["styles"])) {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
 
           if (isset($_POST["flags"])) {
@@ -168,6 +181,99 @@
             <INPUT TYPE="RESET" VALUE="Очистить">
           </div>
         </FORM>
+      </section>
+      <section>
+        <h3 class="h2">Текстовые файлы</h3>
+
+        <FORM class="form" method="post" action="index.php">
+          <div class="form__flags">
+            <p>Оформления текста:</p>
+            <div class="form__flags__div">
+              <P><INPUT TYPE="checkbox" id="cat" VALUE="cat" NAME="styles[]"></P>
+              <label for="cat">Котиками</label>
+            </div>
+            <div class="form__flags__div">
+              <P><INPUT TYPE="checkbox" id="dogs" VALUE="dog" NAME="styles[]"></P>
+              <label for="dog">Собачками</label>
+            </div>
+            <div class="form__flags__div">
+              <P><INPUT TYPE="checkbox" id="turtle" VALUE="turtle" NAME="styles[]"></P>
+              <label for="turtle">Черепахами</label>
+            </div>
+          </div>
+
+          <div>
+            <p>Ваш комментарий: </p>
+            <P><TEXTAREA rows="4" cols="50" TYPE="text" NAME="comment"></P>
+          </div>
+
+          <div>
+            <INPUT TYPE="SUBMIT" VALUE="Отправить!">
+            <INPUT TYPE="RESET" VALUE="Очистить">
+          </div>
+        </FORM>
+      </section>
+      <section>
+        <?php
+        $styles = "";
+        $comment = "---";
+
+        function stylesName($name)
+        {
+          if ($name == "cat") {
+            return "Кошки";
+          } else if ($name == "dog") {
+            return "Собаки";
+          } else if ($name == "turtle") {
+            return "Черепахи";
+          }
+
+          return "---";
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST["flags"])) {
+          if (isset($_POST["styles"])) {
+            for ($i = 0; $i < count($_POST["styles"]); $i++) {
+              $styles = $styles . stylesName($_POST["styles"][$i]);
+              if ($i != count($_POST["styles"]) - 1) {
+                $styles = $styles . " | ";
+              }
+            }
+          } else {
+            $styles = "---";
+          }
+
+          if (isset($_POST["comment"])) {
+            $comment = $_POST["comment"];
+          }
+
+          $fp = @fopen(__DIR__ . "/logs.txt", "a");
+          if (!$fp) {
+            echo "<p>Возникли неполадки</p>";
+          } else {
+            $str = "<p>" . date('d/m/y h:m') . "</p>" . "<p>" . $styles . "</p>" . "<p>" . $comment . "</p>";
+            fwrite($fp, $str);
+          }
+
+          header("location:index.php");
+        }
+
+        if (!file_exists(__DIR__ . "/logs.txt")) {
+          echo "<p>Ошибка доступа к журналу</p>";
+        } else {
+          echo '<h3 class="h2">Журнал</h3>';
+          echo '<div class="journal"><p>Дата</p><p>Стили</p><p>Комментарий</p>';
+      
+          $file = fopen(__DIR__ . '/logs.txt', 'r');
+
+          while (!feof($file)) {
+            $text = fgets($file);
+            echo $text;
+          }
+
+          fclose($file);
+        }
+        ?>
       </section>
     </main>
   </div>
