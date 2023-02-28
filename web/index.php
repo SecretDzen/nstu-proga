@@ -152,10 +152,7 @@
           }
         }
 
-        if (
-          isset($_COOKIE["visit"]) && isset($_COOKIE["text"])
-          && isset($_POST["graphics"]) && isset($_POST["styles"])
-        ) {
+        if (isset($_COOKIE["visit"]) && isset($_COOKIE["text"]) && isset($_COOKIE["graphics"]) && isset($_COOKIE["styles"])) {
           $text = textName($_COOKIE["text"]);
           $graphics = graphicsName($_COOKIE["graphics"]);
           $styles = stylesName($_COOKIE["styles"]);
@@ -173,7 +170,7 @@
           <div class="form__flags">
             <p>Текст:</p>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="standard" VALUE="standard" NAME="text" default></P>
+              <P><INPUT TYPE="radio" id="standard" VALUE="standard" NAME="text"></P>
               <label for="standard">Стандарт</label>
             </div>
             <div class="form__flags__div">
@@ -193,7 +190,7 @@
               <label for="minimal">Минимально</label>
             </div>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="normal" VALUE="normal" NAME="graphics" default></P>
+              <P><INPUT TYPE="radio" id="normal" VALUE="normal" NAME="graphics"></P>
               <label for="normal">Нормально</label>
             </div>
           </div>
@@ -201,7 +198,7 @@
           <div class="form__flags">
             <p>Стили оформления:</p>
             <div class="form__flags__div">
-              <P><INPUT TYPE="radio" id="noir" VALUE="noir" NAME="styles" default></P>
+              <P><INPUT TYPE="radio" id="noir" VALUE="noir" NAME="styles"></P>
               <label for="noir">Нуар</label>
             </div>
             <div class="form__flags__div">
