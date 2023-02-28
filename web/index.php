@@ -15,6 +15,10 @@
     text-align: center;
   }
 
+  .main {
+    background-image: url("./bg.jpg");
+  }
+
   .h1 {
     font-size: 30px;
     padding: 4px;
@@ -57,6 +61,13 @@
     flex-direction: column;
     gap: 4px;
   }
+
+
+  .form__flags {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
 </style>
 
 <head>
@@ -68,7 +79,7 @@
     <h1 class="h1">Лабораторная работа №1</h1>
   </header>
 
-  <main>
+  <main class="main">
     <h2 class="h2">MySQL. Проектирование и реализация базы данных.</h2>
     <section class="block__download">
       <img src="hacker.png" class="img" alt="hacker" />
@@ -79,77 +90,112 @@
 
     <section class="block_cookies">
       <?php
-      $surname = "преподаватель";
-      $course = "не выбран";
+      $text = "не выбран";
+      $graphics = "не выбраны";
+      $styles = "не выбраны";
 
-      function courseName($name)
+      function textName($name)
       {
-        if ($name == "web") {
-          return "Веб";
-        } else if ($name == "ls") {
-          return "БЖД";
-        } else if ($name == "economy") {
-          return "Экономика";
-        } else if ($name == "csa") {
-          return "Клиент-сервер";
-        } else if ($name == "compilers") {
-          return "Компиляторы";
+        if ($name == "standard") {
+          return "Стандарт";
+        } else if ($name == "bold") {
+          return "Строгий";
+        } else if ($name == "italic") {
+          return "Мягкий";
         }
 
         return "не выбран";
       }
 
+      function graphicsName($name)
+      {
+        if ($name == "minimal") {
+          return "Минимально";
+        } else if ($name == "normal") {
+          return "Нормально";
+        }
+
+        return "не выбраны";
+      }
+
+      function stylesName($name)
+      {
+        if ($name == "noir") {
+          return "Нуар";
+        } else if ($name == "future") {
+          return "Футуризм";
+        }
+
+        return "не выбраны";
+      }
+
       if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        if (isset($_POST["surname"]) && isset($_POST["course"])) {
+        if (isset($_POST["text"]) && isset($_POST["graphics"]) && isset($_POST["styles"])) {
           setcookie("visit", date('m/d/y h:m'), time() + 365 * 24 * 60 * 60);
-          setcookie("surname", $_POST["surname"], time() + 365 * 24 * 60 * 60);
-          setcookie("course", $_POST["course"], time() + 365 * 24 * 60 * 60);
+          setcookie("text", $_POST["text"], time() + 365 * 24 * 60 * 60);
+          setcookie("graphics", $_POST["graphics"], time() + 365 * 24 * 60 * 60);
+          setcookie("styles", $_POST["styles"], time() + 365 * 24 * 60 * 60);
 
           header("location:index.php");
-        } else {
-          echo "<p>Все поля обязательны к заполнению :)</p>";
         }
       }
 
       if (
-        isset($_COOKIE["visit"]) && isset($_COOKIE["surname"])
-        && isset($_COOKIE["course"])
+        isset($_COOKIE["visit"]) && isset($_COOKIE["text"])
+        && isset($_POST["graphics"]) && isset($_POST["styles"])
       ) {
-        $surname = $_COOKIE["surname"];
-        $course = courseName($_COOKIE["course"]);
+        $text = textName($_COOKIE["text"]);
+        $graphics = graphicsName($_COOKIE["graphics"]);
+        $styles = stylesName($_COOKIE["styles"]);
 
         echo "<p>Время последнего визита: " . $_COOKIE["visit"] . "</p>";
       }
 
-      echo "<h3>Приветствуем, " . $surname . "!</h3>";
-      echo "<p>Ваш курс: " . $course . ". </p>";
+      echo "<h3>Приветствуем, юзер!</h3>";
+      echo "<p>Текст: " . $text . ". </p>";
+      echo "<p>Граф. данные: " . $graphics . ". </p>";
+      echo "<p>Стили офорлмения: " . $styles . ". </p>";
 
       ?>
       <FORM class="form" method="post" action="index.php">
-        <div>
-          <p>Введите вашу фамилию:</p>
-          <P><INPUT TYPE="TEXT" NAME="surname" PLACEHOLDER="Фамилия"></P>
+        <div class="form__flags">
+          <p>Текст:</p>
+          <div>
+            <P><INPUT TYPE="radio" id="standard" VALUE="standard" NAME="text"></P>
+            <label for="standard">Стандарт</label>
+          </div>
+          <div>
+            <P><INPUT TYPE="radio" id="bold" VALUE="bold" NAME="text"></P>
+            <label for="bold">Строгий</label>
+          </div>
+          <div>
+            <P><INPUT TYPE="radio" id="italic" VALUE="italic" NAME="text"></P>
+            <label for="italic">Мягкий</label>
+          </div>
         </div>
-        <p>Ваш курс:</p>
-        <div>
-          <INPUT TYPE="radio" id="web" VALUE="web" NAME="course" PLACEHOLDER="Фамилия">
-          <label for="web">Веб</label>
+
+        <div class="form__flags">
+          <p>Граф. данные:</p>
+          <div>
+            <P><INPUT TYPE="radio" id="minimal" VALUE="minimal" NAME="graphics"></P>
+            <label for="minimal">Минимально</label>
+          </div>
+          <div>
+            <P><INPUT TYPE="radio" id="normal" VALUE="normal" NAME="graphics"></P>
+            <label for="normal">Нормально</label>
+          </div>
         </div>
-        <div>
-          <INPUT TYPE="radio" id="csa" VALUE="csa" NAME="course" PLACEHOLDER="Фамилия">
-          <label for="csa">Клиент-Сервер</label>
-        </div>
-        <div>
-          <INPUT TYPE="radio" id="economy" VALUE="economy" NAME="course">
-          <label for="economy">Экономика</label>
-        </div>
-        <div>
-          <INPUT TYPE="radio" id="compilers" VALUE="compilers" NAME="course">
-          <label for="compilers">Компиляторы</label>
-        </div>
-        <div>
-          <INPUT TYPE="radio" id="ls" VALUE="ls" NAME="course">
-          <label for="ls">БЖД</label>
+
+        <div class="form__flags">
+          <p>Стили оформления:</p>
+          <div>
+            <P><INPUT TYPE="radio" id="noir" VALUE="noir" NAME="styles"></P>
+            <label for="noir">Нуар</label>
+          </div>
+          <div>
+            <P><INPUT TYPE="radio" id="future" VALUE="future" NAME="styles"></P>
+            <label for="future">Футуризм</label>
+          </div>
         </div>
 
         <div>
