@@ -231,7 +231,7 @@
           return "---";
         }
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["flags"] == [] && ($_POST["comment"] != "" || $_POST["styles"] == [])) {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST["flags"] == [] && ($_POST["comment"] != "" || $_POST["styles"] != [])) {
           if (isset($_POST["styles"])) {
             for ($i = 0; $i < count($_POST["styles"]); $i++) {
               $styles = $styles . stylesName($_POST["styles"][$i]);
