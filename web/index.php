@@ -243,12 +243,13 @@
             $styles = "---";
           }
 
-          if (isset($_POST["comment"])) {
+          if (isset($_POST["comment"]) && $_POST["comment"] != "") {
             $comment = $_POST["comment"];
           }
 
-          $fp = @fopen("/www-data/web/logs.txt", "a");
+          $fp = @fopen(__DIR__ . "/logs.txt", "a");
           if (!$fp) {
+            echo "<p>Ошибка доступа к журналу</p>";
             echo "Путь - " . __DIR__ . "/logs.txt";
           } else {
             $str = "<p>" . date('d/m/y h:m') . "</p>" . "<p>" . $styles . "</p>" . "<p>" . $comment . "</p>";
@@ -258,14 +259,13 @@
           header("location:index.php");
         }
 
-        if (!file_exists("/www-data/web/logs.txt")) {
+        if (!file_exists(__DIR__ . "logs.txt")) {
           echo "<p>Ошибка доступа к журналу</p>";
         } else {
           echo '<h3 class="h2">Журнал</h3>';
           echo '<div class="journal"><p>Дата</p><p>Стили</p><p>Комментарий</p>';
 
           $file = fopen(__DIR__ . '/logs.txt', 'r');
-
           while (!feof($file)) {
             $text = fgets($file);
             echo $text;
