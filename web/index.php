@@ -247,9 +247,8 @@
             $comment = $_POST["comment"];
           }
 
-          $fp = @fopen(__DIR__ . "/logs.txt", "a");
+          $fp = @fopen("/www-data/web/logs.txt", "a");
           if (!$fp) {
-            echo "<p>Возникли неполадки</p>";
             echo "Путь - " . __DIR__ . "/logs.txt";
           } else {
             $str = "<p>" . date('d/m/y h:m') . "</p>" . "<p>" . $styles . "</p>" . "<p>" . $comment . "</p>";
@@ -259,7 +258,7 @@
           header("location:index.php");
         }
 
-        if (!file_exists(__DIR__ . "/logs.txt")) {
+        if (!file_exists("/www-data/web/logs.txt")) {
           echo "<p>Ошибка доступа к журналу</p>";
         } else {
           echo '<h3 class="h2">Журнал</h3>';
