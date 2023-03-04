@@ -107,7 +107,7 @@
       <h2 class="h2">MySQL. Проектирование и реализация базы данных.</h2>
       <section class="block__download">
         <img src="hacker.png" class="img" alt="hacker" />
-        <a href="/web/dump.sql" target="_blank">Открыть дамп базы данных</a>
+        <a href="/web/lab1/dump.sql" target="_blank">Открыть дамп базы данных</a>
       </section>
 
       <h2 class="h2">PHP. Работа с файлами теневых посылок (cookies) и текстовыми файлами.</h2>
