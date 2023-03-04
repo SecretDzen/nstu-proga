@@ -13,8 +13,13 @@
     color: #fff;
   }
 
+  .main {
+    padding: 8px 4px;
+    background-color: #111;
+  }
+
   .article {
-    min-height: 90vh;
+    min-height: 95vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,7 +35,7 @@
   .footer {
     background-color: #333;
     color: #fff;
-    padding: 4px;
+    padding: 8px 4px;
     text-align: center;
   }
 </style>
@@ -43,7 +48,7 @@
   <header class="header">
     <h1>Список лабораторных</h1>
   </header>
-  <main>
+  <main class="main">
     <article class="article">
       <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
       <a class="link">Лабораторная работа №2</a>
