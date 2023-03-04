@@ -26,28 +26,28 @@ CREATE SCHEMA labs
     );
 
 INSERT INTO labs.position(name)
-VALUES ('Аспирант'),
-       ('Профессор'),
-       ('Преподаватель'),
-       ('Старший преподаватель');
+VALUES ('Aspirant'),
+       ('Professor'),
+       ('Teacher'),
+       ('High Teacher');
 
 INSERT INTO labs.degree(name)
-VALUES ('Кандидат'),
-       ('Доктор');
+VALUES ('Candidate'),
+       ('Doctor');
 
 INSERT INTO labs.courses(name)
-VALUES ('Веб'),
-       ('Клиент-Сервер'),
-       ('Компиляторы'),
-       ('Экономика'),
-       ('БЖД');
+VALUES ('Web'),
+       ('Client-Server'),
+       ('Compilers'),
+       ('Economy'),
+       ('Life Safety');
 
 INSERT INTO labs.teachers
     (position, degree, courses, surname, room_number)
-VALUES (1, 1, 1, 'Попов', 412),
-       (2, 2, 2, 'Шаталов', 138),
-       (3, 1, 3, 'Игенов', 213),
-       (4, 2, 4, 'Герман', 321),
-       (1, 1, 5, 'Хейнов', 128);
+VALUES (1, 1, 1, 'Popov', 412),
+       (2, 2, 2, 'Shatalov', 138),
+       (3, 1, 3, 'Igenov', 213),
+       (4, 2, 4, 'German', 321),
+       (1, 1, 5, 'Kheynov', 128);
 
 SELECT * FROM labs.teachers;
