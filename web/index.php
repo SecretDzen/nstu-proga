@@ -15,11 +15,11 @@
 
   .main {
     padding: 8px 4px;
-    background-color: #ddd;
+    background-color: #ccc;
   }
 
   .article {
-    min-height: 95vh;
+    min-height: 50vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,9 +27,10 @@
   }
 
   .link {
-    font-size: 24px;
-    padding: 6px 18px;
+    font-size: 20px;
+    padding: 8px 24px;
     border: 1px solid black;
+    border-radius: 10px;
   }
 
   .footer {
