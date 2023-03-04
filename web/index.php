@@ -15,7 +15,7 @@
 
   .main {
     padding: 8px 4px;
-    background-color: #111;
+    background-color: #ddd;
   }
 
   .article {
