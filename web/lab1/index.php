@@ -91,6 +91,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
   }
+
+  .footer {
+    background-color: #333;
+    color: #fff;
+    padding: 8px 4px;
+    text-align: center;
+  }
 </style>
 
 <head>
@@ -276,6 +283,10 @@
         ?>
       </section>
     </main>
+    <footer class="footer">
+      <p>Лабораторные выполнил студент АВТ-019 - Попов П.С.</p>
+      <p>Вариант №8</p>
+    </footer>
   </div>
 </body>
 
