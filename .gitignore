@@ -1,2 +1,3 @@
 *.out
+config.php
 node_modules
