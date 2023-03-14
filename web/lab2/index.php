@@ -21,15 +21,17 @@
 
 <head>
   <title>Web - lab2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
   <header class="header">
-    <h1 class="h1">Лабораторная работа №2</h1>
+    <h1 class="p-4">Лабораторная работа №2</h1>
   </header>
+
   <?php
-  require_once(__DIR__ . "/config.php");
-  $db = pg_connect("host=$host_db port=$port_db user=$user_db password=$pass_db dbname=$dbname");
+  require_once('../utils/connection.php');
+  $db = connect();
 
   if (!$db) {
     echo "<p>Ошибка подключения</p>";
