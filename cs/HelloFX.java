@@ -67,9 +67,9 @@ public class HelloFX extends Application {
     Button btnDeleteAll = new Button("Delete All");
     Button btnStopAll = new Button("Stop All");
     Button btnStartAll = new Button("Start All");
-    Button btnStart = new Button("Start Element");
-    Button btnDelete = new Button("Delete Element");
-    Button btnStop = new Button("Stop Element");
+    Button btnStart = new Button("Start Selected");
+    Button btnDelete = new Button("Delete Selected");
+    Button btnStop = new Button("Stop Selected");
     hbox.getChildren().addAll(btnImg, btnText, btnDeleteAll, btnStopAll, btnStartAll, btnDelete, btnStop, btnStart);
 
     btnText.setOnAction(e -> {
