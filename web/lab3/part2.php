@@ -17,7 +17,7 @@
         font-size: 30px;
         padding: 4px;
     }
-
+    
 
     :root {
         --main-color: #03c03c;

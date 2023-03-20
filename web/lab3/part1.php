@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../utils/connection.php');
 $db = connect();
 
-$books = pg_query(
+$teachers = pg_query(
     $db,
     'SELECT teachers.id,
     position.name as position,
@@ -95,7 +95,7 @@ $books = pg_query(
                     <th>Аудитория</th>
                 </tr>
                 <?php
-                while ($line = pg_fetch_array($books, null, PGSQL_ASSOC)) {
+                while ($line = pg_fetch_array($teachers, null, PGSQL_ASSOC)) {
                     echo "\t<tr>\n";
                     foreach ($line as $col_value) {
                         ?>
