@@ -1,28 +1,32 @@
 DROP SCHEMA IF EXISTS labs CASCADE;
 CREATE SCHEMA labs
 
-    CREATE TABLE position(
-        id   SERIAL PRIMARY KEY,
-        name TEXT UNIQUE
+    CREATE TABLE position
+    (
+        id   serial PRIMARY KEY,
+        name text UNIQUE
     )
 
-    CREATE TABLE degree(
-        id   SERIAL PRIMARY KEY,
-        name TEXT UNIQUE
-    )
-    
-    CREATE TABLE courses(
-        id   SERIAL PRIMARY KEY,
-        name TEXT UNIQUE
+    CREATE TABLE degree
+    (
+        id   serial PRIMARY KEY,
+        name text UNIQUE
     )
 
-    CREATE TABLE teachers(
-        id          SERIAL PRIMARY KEY,
-        position    INT REFERENCES position (id),
-        degree      INT REFERENCES degree (id),
-        courses     INT REFERENCES courses (id),
-        surname     TEXT,
-        room_number INT
+    CREATE TABLE courses
+    (
+        id   serial PRIMARY KEY,
+        name text UNIQUE
+    )
+
+    CREATE TABLE teachers
+    (
+        id          serial PRIMARY KEY,
+        position    int REFERENCES position (id),
+        degree      int REFERENCES degree (id),
+        courses     int REFERENCES courses (id),
+        surname     text,
+        room_number int
     );
 
 INSERT INTO labs.position(name)
@@ -50,4 +54,17 @@ VALUES (1, 1, 1, 'Popov', 412),
        (4, 2, 4, 'German', 321),
        (1, 1, 5, 'Kheynov', 128);
 
-SELECT * FROM labs.teachers;
+SELECT *
+FROM labs.teachers;
+
+CREATE TABLE users
+(
+    id           serial PRIMARY KEY,
+    login        text NOT NULL,
+    password     text NOT NULL,
+    access_level int  NOT NULL DEFAULT 0
+);
+
+INSERT INTO users (login, password, access_level)
+VALUES ('admin', 'qwertyqwerty', 2),
+       ('operator', '123123', 1);
