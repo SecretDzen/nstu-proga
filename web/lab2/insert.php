@@ -12,7 +12,7 @@ session_start();
 $authenticated = !empty($_SESSION['auth']);
 $authenticated = $authenticated && $_SESSION['auth'] == true;
 
-if (!$authenticated || $_SESSION['group'] < 1) {
+if (!$authenticated || $_SESSION['group'] < 2) {
     header('location:forbidden.html');
     exit();
 }

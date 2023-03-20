@@ -133,7 +133,7 @@ if (isset($_POST["log_out"])) {
       </form>
       <br>
       <?php
-      if ($authenticated) {
+      if ($authenticated && $_SESSION['group'] > 1) {
         echo '<a href="insert.php" class="text-black px-6 py-3 bg-blue-400 rounded">Добавить запись</a>';
       }
       ?>

@@ -53,7 +53,7 @@
     <article class="article">
       <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
       <a class="link" href="/web/lab2/">Лабораторная работа №2</a>
-      <a class="link">Лабораторная работа №3</a>
+      <a class="link" href="/web/lab3/">Лабораторная работа №3</a>
       <a class="link">Лабораторная работа №4</a>
     </article>
   </main>
