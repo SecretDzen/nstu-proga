@@ -91,14 +91,14 @@ if (isset($_POST["log_out"])) {
     <div>
       <div class="status">
         <span>
-	  <?= isset($_SESSION['login']) ? 'Вы вошли как: ' . $_SESSION['login'] . 'Будьте как дома ' : 'Вы не вошли в систему! Будьте гостем ' ?>
+	  <?= isset($_SESSION['login']) ? 'Вы вошли как: ' . $_SESSION['login'] . '. Будьте как дома ' : 'Вы не вошли в систему! Будьте гостем ' ?>
           или
 	</span>
       <?php
       if ($authenticated) {
         echo '<form method="post" action="index.php"><p><button type="submit" name="log_out">выйдите из системы</button></p></form>';
       } else {
-	echo '<form method="get" action="auth.php"><p><button type="submit" class="auth-btn">войдите в систему</button></p></form>';
+	echo '<form method="get" action="auth.php"><p><button type="submit">войдите в систему</button></p></form>';
       }
       ?>
       </div>

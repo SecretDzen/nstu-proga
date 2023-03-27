@@ -24,15 +24,37 @@ if (!$authenticated || $_SESSION['group'] < 2) {
 <head>
     <title>Insertion</title>
     <style>
-        body {
-            display: block;
-            text-align: -webkit-center;
-        }
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-weight: 500;
+      } 
+
+      body {
+       display: block;
+       text-align: -webkit-center;
+      }
+
+     .header {
+       background-color: #333;
+       color: #fff;
+       padding: 4px;
+       text-align: center;
+     }
+
+    .h1 {
+      font-size: 30px;
+      padding: 4px;
+    }
     </style>
 </head>
 
 <body>
-
+  <header class="header">
+      <h1 class="h1">Вставка</h1>
+  </header>
     <?php
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST["position"]) && isset($_POST["degree"]) && isset($_POST["course"]) && isset($_POST["surname"]) && isset($_POST["room"])) {
         $position_id = pg_fetch_all(pg_query_params($db, 'SELECT id from labs."position" where name = $1 limit 1;', array($_POST['position'])), PGSQL_ASSOC)[0]['id'];

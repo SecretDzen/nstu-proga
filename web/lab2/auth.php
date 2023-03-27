@@ -78,7 +78,7 @@ $db = connect();
         <input name="login" id="login" placeholder="Введите логин" />
       </div>
       <div>
-        <input name="password" id="password" placeholder="Введите пароль" />
+        <input name="password" type="password" id="password" placeholder="Введите пароль" />
       </div>
       <button type=" submit">Войти</button>
     </form>
