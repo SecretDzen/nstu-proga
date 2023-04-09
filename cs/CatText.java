@@ -17,7 +17,6 @@ public class CatText extends AbstractClass {
     this.label_.setTextAlignment(TextAlignment.CENTER);
     this.label_.setFont(Font.font(24));
     this.label_.setTextFill(color);
-
     this.bpane_.setCenter(label_);
 
     setupAnimation();

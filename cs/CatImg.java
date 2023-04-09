@@ -14,11 +14,10 @@ public class CatImg extends AbstractClass {
 
   public CatImg(int x, int y) throws FileNotFoundException {
     super(x, y, null);
-    this.img_ = new Image(new FileInputStream("/home/ex4to/dev/nstu-works/cs/cat.png"));
+    this.img_ = new Image(new FileInputStream("/home/desolaye/dev/nstu-works/cs/cat.png"));
     this.imgView_ = new ImageView(this.img_);
-    this.imgView_.setFitWidth(100);
+    this.imgView_.setFitWidth(80);
     this.imgView_.setPreserveRatio(true);
-
     this.bpane_.setCenter(imgView_);
 
     setupAnimation();
