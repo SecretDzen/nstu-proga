@@ -1,3 +1,6 @@
+package elements;
+
+import classes.AbstractClass;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;

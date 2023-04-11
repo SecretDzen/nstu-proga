@@ -1,6 +1,8 @@
+package elements;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import classes.AbstractClass;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
