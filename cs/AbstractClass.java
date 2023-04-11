@@ -55,7 +55,7 @@ public abstract class AbstractClass {
     this.selected_ = !this.selected_;
 
     if (this.selected_) {
-      this.bpane_.setStyle("-fx-border-color: black; -fx-background-color: black;");
+      this.bpane_.setStyle("-fx-border-color: black;");
     } else {
       this.bpane_.setStyle("-fx-border-color: transparent;");
     }

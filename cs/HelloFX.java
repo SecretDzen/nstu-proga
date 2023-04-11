@@ -13,12 +13,9 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -247,19 +244,23 @@ public class HelloFX extends Application {
 
   private void createSettingButtons(VBox vbox) {
     Button quitProgram = new Button("Exit");
-    quitProgram.setMaxSize(150, 200);
+    quitProgram.setMaxSize(150, 300);
     vbox.getChildren().add(quitProgram);
 
     quitProgram.setOnAction(e -> {
       Platform.exit();
     });
-
   }
 
   private void createServerButtons(VBox vbox) {
     Button startServer = new Button("Start Server");
+    Button runClient = new Button("Run Client");
 
-    vbox.getChildren().add(startServer);
+    
+    startServer.setMaxSize(150, 200);
+    runClient.setMaxSize(150, 200);
+
+    vbox.getChildren().addAll(startServer, runClient);
   }
 
   private Background createBackground() throws FileNotFoundException {
