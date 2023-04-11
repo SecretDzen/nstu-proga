@@ -1,7 +1,6 @@
 package football;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -9,8 +8,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Client extends Application {
   private final int WIDTH_ = 900;
@@ -21,6 +18,7 @@ public class Client extends Application {
   private TextField messageField;
   private Button sendButton;
   private Button toggleButton;
+
   private Middleware clienSocket_;
 
   public static void main(String[] args) {
@@ -29,7 +27,9 @@ public class Client extends Application {
 
   @Override
   public void start(Stage rootStage) {
-    clienSocket_ = new Middleware();
+    clienSocket_ = new Middleware(false);
+    clienSocket_.addClient(this);
+    clienSocket_.start();
 
     logs_ = new TextArea();
     logs_.setEditable(false);
@@ -43,7 +43,13 @@ public class Client extends Application {
 
     toggleButton = new Button("Connect");
     toggleButton.setOnAction(event -> {
-      handleClientStatus();
+      if (isConnected_) {
+        changeConnectionStatus();
+        clienSocket_.disconnect();
+      } else {
+        changeConnectionStatus();
+        clienSocket_.connect();
+      }
     });
 
     HBox inputBox = new HBox(messageField, sendButton);
@@ -56,40 +62,8 @@ public class Client extends Application {
     rootStage.show();
   }
 
-  private void handleClientStatus() {
-    int status = clienSocket_.manageConnection();
-    if (status == 1) {
-      changeConnectionStatus();
-      appendLog("Connected to server\n");
-      createThread();
-    } else if (status == 2) {
-      changeConnectionStatus();
-      appendLog("Disconnected from server\n");
-    } else {
-      appendLog("Wild Error: " + status + "\n");
-    }
-  }
-
-  private void createThread() {
-    new Thread(() -> {
-      try {
-        while (true) {
-          String message = clienSocket_.getReader().readLine();
-          if (message == null)
-            break;
-          Platform.runLater(() -> appendLog(message));
-        }
-      } catch (IOException err) {
-        if (clienSocket_.getClientSocket() != null) {
-          Platform.runLater(() -> appendLog("Error receiving message\n"));
-          System.err.println("Error receiving message: " + err.getMessage());
-        }
-      }
-    }).start();
-  }
-
-  private void appendLog(String msg) {
-    logs_.appendText(msg);
+  public void appendLog(String msg) {
+    logs_.appendText(msg + "\n");
   }
 
   private void changeConnectionStatus() {
@@ -103,7 +77,9 @@ public class Client extends Application {
 
   private void sendMessage() {
     if (clienSocket_.getWriter() != null) {
-      clienSocket_.getWriter().println(messageField.getText() + "\n");
+      String msg = "Client: " + messageField.getText();
+      clienSocket_.getWriter().println(msg);
+      appendLog(msg);
       messageField.setText("");
     }
   }

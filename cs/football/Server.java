@@ -1,7 +1,6 @@
 package football;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -10,10 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Server extends Application {
   private final int WIDTH_ = 900;
@@ -26,7 +21,6 @@ public class Server extends Application {
   private Button toggleButton;
   private Button createClient_;
   private Middleware serverSocket_;
-  public List<Middleware> clients_ = new ArrayList<>();
 
   public static void main(String[] args) {
     launch(args);
@@ -34,7 +28,9 @@ public class Server extends Application {
 
   @Override
   public void start(Stage rootStage) {
-    serverSocket_ = new Middleware(null, this);
+    serverSocket_ = new Middleware(true);
+    serverSocket_.addServer(this);
+    serverSocket_.start();
 
     messageArea = new TextArea();
     messageArea.setEditable(false);
@@ -42,20 +38,24 @@ public class Server extends Application {
     HBox.setHgrow(root, Priority.ALWAYS);
 
     messageField = new TextField();
-    messageField.setOnAction(event -> sendMessage());
-
     sendButton = new Button("Send");
     sendButton.setOnAction(event -> sendMessage());
 
     toggleButton = new Button("Start");
     toggleButton.setOnAction(event -> {
-      handleServerStatus();
+      if (isConnected_) {
+        changeConnectionStatus();
+        serverSocket_.disconnect();
+      } else {
+        changeConnectionStatus();
+        serverSocket_.connect();
+      }
     });
 
     createClient_ = new Button("Start Client");
     createClient_.setOnAction(e -> {
-      Client client = new Client();
-      client.start(new Stage());
+      Middleware client = new Middleware(false, new Client(), this);
+      client.runClient();
     });
 
     HBox inputBox = new HBox(messageField, sendButton);
@@ -68,26 +68,6 @@ public class Server extends Application {
     rootStage.show();
   }
 
-  private void handleServerStatus() {
-    int status = serverSocket_.manageConnection();
-    if (status == 3) {
-      changeConnectionStatus();
-      appendLog("Server started!\n");
-      runThread();
-    } else if (status == 4) {
-      changeConnectionStatus();
-      appendLog("Server stopped!\n");
-
-      for (Middleware client : clients_) {
-        client.disconnect();
-      }
-      clients_.clear();
-
-    } else {
-      appendLog("Wild error appear: " + status + "\n");
-    }
-  }
-
   public void changeConnectionStatus() {
     this.isConnected_ = !this.isConnected_;
 
@@ -97,39 +77,16 @@ public class Server extends Application {
       toggleButton.setText("Start server");
   }
 
-  private void runThread() {
-    new Thread(() -> {
-      while (true) {
-        Socket clientSocket = serverSocket_.accept();
-        if (clientSocket == null)
-          break;
-        Middleware clientHandler = new Middleware(clientSocket, this);
-        clients_.add(clientHandler);
-        clientHandler.start();
-      }
-    }).start();
-  }
-
   private void sendMessage() {
-    String message = "Server: " + messageField.getText() + "\n";
-    appendLog(message);
+    String msg = "Server: " + messageField.getText();
+    appendLog(msg);
 
-    for (Middleware client : clients_) {
-      client.getWriter().println(message);
-    }
+    serverSocket_.getWriter().println(msg);
 
     messageField.clear();
   }
 
   public void appendLog(String msg) {
-    messageArea.appendText(msg);
-  }
-
-  public void broadcastMessage(String message) {
-    Platform.runLater(() -> appendLog(message));
-
-    for (Middleware client : clients_) {
-      client.getWriter().println(message);
-    }
+    messageArea.appendText(msg + "\n");
   }
 }
