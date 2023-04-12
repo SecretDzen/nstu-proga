@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import classes.CatApp;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class Middleware extends Thread {
@@ -18,9 +20,9 @@ public class Middleware extends Thread {
   private boolean isServer_;
 
   private ServerSocket serverSocket_;
-  private Server server_;
-  private Client client_;
   private Socket clientSocket_;
+  private CatApp server_;
+  private CatApp client_;
 
   private PrintWriter out_;
   private BufferedReader in_;
@@ -29,7 +31,7 @@ public class Middleware extends Thread {
     this.isServer_ = isServer;
   }
 
-  public Middleware(boolean isServer, Client client, Server server) {
+  public Middleware(boolean isServer, CatApp client, CatApp server) {
     this.isServer_ = isServer;
     this.client_ = client;
     this.server_ = server;
@@ -48,53 +50,71 @@ public class Middleware extends Thread {
   }
 
   private void connectServer() {
-    runSocket();
+    try {
+      runSocket();
 
-    new Thread(() -> {
-      while (true) {
-        try {
-          clientSocket_ = serverSocket_.accept();
-          if (clientSocket_ == null)
+      new Thread(() -> {
+        while (true) {
+          try {
+            clientSocket_ = serverSocket_.accept();
+            if (clientSocket_ == null)
+              break;
+
+            InputStream inStream = clientSocket_.getInputStream();
+            OutputStream outStream = clientSocket_.getOutputStream();
+
+            out_ = new PrintWriter(outStream, true);
+            in_ = new BufferedReader(new InputStreamReader(inStream));
+
+            this.server_.appendLog("Client connected");
+            handleEvents();
+          } catch (Exception err) {
+            if (serverSocket_ != null && !serverSocket_.isClosed()) {
+              System.out.println("=== Error in Middleware.connectServer() ===\n");
+              err.printStackTrace();
+            }
             break;
+          }
+        }
+      }).start();
 
+    } catch (Exception err) {
+      System.out.println("=== Error in Middleware.connectServer() ===\n");
+      err.printStackTrace();
+    }
+
+  }
+
+  private void connectClient() {
+    try {
+      runSocket();
+
+      new Thread(() -> {
+        try {
           InputStream inStream = clientSocket_.getInputStream();
           OutputStream outStream = clientSocket_.getOutputStream();
 
           out_ = new PrintWriter(outStream, true);
           in_ = new BufferedReader(new InputStreamReader(inStream));
-
-          this.server_.appendLog("Client connected");
           handleEvents();
         } catch (Exception err) {
-          if (serverSocket_ != null && !serverSocket_.isClosed()) {
-            System.out.println("=== Error in Middleware.connectServer() ===\n");
-            err.printStackTrace();
-          }
-          break;
+          System.out.println("=== Error in Middleware.connectClient() ===\n");
+          err.printStackTrace();
         }
-      }
-    }).start();
-  }
+      }).start();
 
-  private void connectClient() {
-    runSocket();
-
-    new Thread(() -> {
-      try {
-        InputStream inStream = clientSocket_.getInputStream();
-        OutputStream outStream = clientSocket_.getOutputStream();
-
-        out_ = new PrintWriter(outStream, true);
-        in_ = new BufferedReader(new InputStreamReader(inStream));
-        handleEvents();
-      } catch (Exception err) {
-        System.out.println("=== Error in Middleware.connectClient() ===\n");
+    } catch (Exception err) {
+      if (("Connection refused").equals(err.getMessage())) {
+        this.client_.appendLog("Error: " + err.getMessage());
+      } else {
+        System.out.println("=== Error in Middleware.connect() ===\n");
         err.printStackTrace();
       }
-    }).start();
+    }
+
   }
 
-  public void runSocket() {
+  public void runSocket() throws Exception {
     try {
       if (isServer_) {
         serverSocket_ = new ServerSocket(PORT_);
@@ -104,16 +124,15 @@ public class Middleware extends Thread {
         this.client_.appendLog("Client created");
       }
     } catch (Exception err) {
-      System.out.println("=== Error in Middleware.connect() ===\n");
-      err.printStackTrace();
+      throw new Exception(err.getMessage());
     }
   }
 
-  public void addServer(Server server) {
+  public void addServer(CatApp server) {
     this.server_ = server;
   }
 
-  public void addClient(Client client) {
+  public void addClient(CatApp client) {
     this.client_ = client;
   }
 
@@ -124,11 +143,15 @@ public class Middleware extends Thread {
         if (msg == null)
           break;
 
-        if (this.server_ != null)
-          this.server_.appendLog(msg);
+        if (this.server_ != null) {
+          handleCommand(msg);
+          this.server_.appendLog("Client: " + msg);
+        }
 
-        if (this.client_ != null)
-          this.client_.appendLog(msg);
+        if (this.client_ != null) {
+          handleCommand(msg);
+          this.client_.appendLog("Server: " + msg);
+        }
 
       } catch (Exception err) {
         System.out.println("=== Error in Middleware.handleEvents() ===\n");
@@ -137,11 +160,46 @@ public class Middleware extends Thread {
     }
   }
 
+  private void handleCommand(String command) {
+    Platform.runLater(new Runnable() {
+      @Override
+      public void run() {
+        String[] byCommand = command.split(" ");
+
+        if (server_ != null) {
+          if ("clear".equals(byCommand[0])) {
+            server_.deleteVectors();
+          } else if ("obj".equals(byCommand[0])) {
+            server_.addObject(command);
+          } else if ("list".equals(byCommand[0])) {
+          } else if ("size".equals(byCommand[0])) {
+          } else if ("index".equals(byCommand[0])) {
+            server_.getByIndex(command);
+          }
+        }
+
+        if (client_ != null) {
+          if ("clear".equals(byCommand[0])) {
+            client_.deleteVectors();
+          } else if ("obj".equals(byCommand[0])) {
+            client_.addObject(command);
+          } else if ("list".equals(byCommand[0])) {
+          } else if ("size".equals(byCommand[0])) {
+          } else if ("index".equals(byCommand[0])) {
+            client_.getByIndex(command);
+          }
+        }
+
+      }
+    });
+  }
+
   public void disconnect() {
     try {
       if (clientSocket_ != null) {
         clientSocket_.close();
         clientSocket_ = null;
+        this.client_.appendLog("Disconnected from server");
       }
 
       if (serverSocket_ != null) {
@@ -156,11 +214,15 @@ public class Middleware extends Thread {
   }
 
   public PrintWriter getWriter() {
-    return out_;
+    return this.out_;
+  }
+
+  public void sendCommand(String msg) {
+    this.out_.println(msg);
   }
 
   public void runClient() {
-    client_.start(new Stage());
+    this.client_.start(new Stage());
   }
 
 }

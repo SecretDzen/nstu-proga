@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import elements.*;
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -29,9 +30,9 @@ public class CommonButtons {
     Button btnDeleteAll = new Button("Delete All");
     Button btnStopAll = new Button("Stop All");
     Button btnStartAll = new Button("Start All");
-    Button btnStart = new Button("Start Selected");
-    Button btnDelete = new Button("Delete Selected");
-    Button btnStop = new Button("Stop Selected");
+    Button btnStart = new Button("Start");
+    Button btnDelete = new Button("Delete");
+    Button btnStop = new Button("Stop");
 
     btnText.setMinSize(150, 25);
     btnImg.setMinSize(150, 25);
@@ -44,36 +45,10 @@ public class CommonButtons {
 
     vbox.getChildren().addAll(btnImg, btnText, btnDeleteAll, btnStopAll, btnStartAll, btnDelete, btnStop, btnStart);
 
-    btnText.setOnAction(e -> {
-      Random random = new Random();
-      CatText catText = new CatText(random.nextInt(WIDTH_ - 450) + 320, random.nextInt(HEIGHT_ - 175) + 50,
-          Color.CRIMSON);
-      texts_.add(catText);
-      view.getChildren().add(catText.getElement());
-    });
+    btnText.setOnAction(e -> createText(view, this.texts_, -1, -1));
+    btnImg.setOnAction(e -> createImg(view, this.images_, -1, -1));
 
-    btnImg.setOnAction(e -> {
-      try {
-        Random random = new Random();
-        CatImg catImg = new CatImg(random.nextInt(WIDTH_ - 425) + 320, random.nextInt(HEIGHT_ - 175) + 50);
-        images_.add(catImg);
-        view.getChildren().add(catImg.getElement());
-      } catch (FileNotFoundException err) {
-        System.out.println(err);
-      }
-    });
-
-    btnDeleteAll.setOnAction(e -> {
-      for (CatImg item : images_) {
-        view.getChildren().remove(item.getElement());
-      }
-      images_.clear();
-
-      for (CatText item : texts_) {
-        view.getChildren().remove(item.getElement());
-      }
-      texts_.clear();
-    });
+    btnDeleteAll.setOnAction(e -> deleteAll(view, this.images_, this.texts_));
 
     btnStopAll.setOnAction(e -> {
       for (CatImg item : images_)
@@ -159,6 +134,52 @@ public class CommonButtons {
         }
       }
     });
+  }
+
+  public void createText(Group view, Vector<CatText> texts, int x, int y) {
+    CatText catText;
+
+    if (x == y && x == -1) {
+      Random random = new Random();
+      catText = new CatText(random.nextInt(WIDTH_ - 450) + 320, random.nextInt(HEIGHT_ - 175) + 50,
+          Color.CRIMSON);
+    } else {
+      catText = new CatText(x, y, Color.DEEPPINK);
+    }
+
+    texts.add(catText);
+    view.getChildren().add(catText.getElement());
+  }
+
+  public void createImg(Group view, Vector<CatImg> images, int x, int y) {
+    try {
+      CatImg catImg;
+
+      if (x == y && x == -1) {
+        Random random = new Random();
+        catImg = new CatImg(random.nextInt(WIDTH_ - 450) + 320, random.nextInt(HEIGHT_ - 175) + 50);
+      } else {
+        catImg = new CatImg(x, y);
+      }
+
+      images.add(catImg);
+      view.getChildren().add(catImg.getElement());
+
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+  }
+
+  public void deleteAll(Group view, Vector<CatImg> images, Vector<CatText> texts) {
+    for (CatImg item : images) {
+      view.getChildren().remove(item.getElement());
+    }
+    images_.clear();
+
+    for (CatText item : texts) {
+      view.getChildren().remove(item.getElement());
+    }
+    texts.clear();
   }
 
 }

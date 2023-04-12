@@ -1,9 +1,9 @@
+import classes.CatApp;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import sockets.Server;
 
 public class MainApp extends Application {
-  private Server server_;
+  private CatApp server_;
   private final int WIDTH_ = 900;
   private final int HEIGHT_ = 600;
   
@@ -13,8 +13,7 @@ public class MainApp extends Application {
 
   @Override
   public void start(Stage root) {
-    server_ = new Server(WIDTH_, HEIGHT_);
+    server_ = new CatApp(this.WIDTH_, this.HEIGHT_, true);
     server_.start(new Stage());
   }
-
 }

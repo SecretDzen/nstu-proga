@@ -46,6 +46,14 @@ public abstract class AbstractClass {
     return this.bpane_.getBoundsInParent();
   }
 
+  public int getX() {
+    return this.x_;
+  }
+
+  public int getY() {
+    return this.y_;
+  }
+
   public void startAnimation() {
     this.timeline_.play();
   }
