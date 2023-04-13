@@ -1,11 +1,9 @@
 package ui;
 
-import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Vector;
 
 import elements.*;
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;

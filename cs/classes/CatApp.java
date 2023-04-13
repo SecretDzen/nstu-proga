@@ -30,26 +30,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class CatApp extends Application {
-  protected int WIDTH_;
-  protected int HEIGHT_;
-  protected boolean isServer_;
-  protected boolean isConnected_ = false;
+  private int WIDTH_;
+  private int HEIGHT_;
+  private boolean isServer_;
+  private boolean isConnected_ = false;
 
-  protected Middleware socket_;
+  private Middleware socket_;
 
-  protected Vector<CatText> texts_;
-  protected Vector<CatImg> images_;
+  private Vector<CatText> texts_;
+  private Vector<CatImg> images_;
 
-  protected CommonButtons commonButtons_;
-  protected SpecialButtons specialButtons_;
+  private CommonButtons commonButtons_;
+  private SpecialButtons specialButtons_;
 
-  protected Stage root_;
-  protected Pane ui_;
-  protected Group view_;
-  protected VBox userPanel_;
-  protected TextArea logs_;
-  protected TextField index_;
-  protected Button connectButton_;
+  private Stage root_;
+  private Pane ui_;
+  private Group view_;
+  private VBox userPanel_;
+  private TextArea logs_;
+  private TextField index_;
+  private Button connectButton_;
 
   public CatApp(int w, int h, boolean isServer) {
     this.WIDTH_ = w;
@@ -195,7 +195,7 @@ public class CatApp extends Application {
     this.socket_.sendCommand(command);
   }
 
-  protected void setupSocket() {
+  private void setupSocket() {
     if (this.isServer_) {
       socket_ = new Middleware(true);
       socket_.addServer(this);
@@ -206,7 +206,7 @@ public class CatApp extends Application {
     socket_.start();
   }
 
-  protected void setupUI(Stage rootStage) {
+  private void setupUI(Stage rootStage) {
     this.root_ = rootStage;
 
     this.texts_ = new Vector<CatText>();
@@ -307,7 +307,7 @@ public class CatApp extends Application {
     view_.addEventFilter(MouseEvent.MOUSE_CLICKED, eventHandler);
   }
 
-  protected void runScene() {
+  private void runScene() {
     Scene scene = new Scene(this.ui_, this.WIDTH_, this.HEIGHT_);
     this.root_.setScene(scene);
     this.root_.show();

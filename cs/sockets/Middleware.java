@@ -213,10 +213,6 @@ public class Middleware extends Thread {
     }
   }
 
-  public PrintWriter getWriter() {
-    return this.out_;
-  }
-
   public void sendCommand(String msg) {
     this.out_.println(msg);
   }

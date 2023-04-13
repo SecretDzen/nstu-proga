@@ -16,7 +16,7 @@ public class SpecialButtons {
     Button sendObject = new Button("Send object");
     Button sendList = new Button("Send list");
     Button requestSize = new Button("Request size");
-    Button requestImage = new Button("Request Image by index");
+    Button requestImage = new Button("Request Img by index");
     Button requestText = new Button("Request Text by index");
 
     clearVectors.setMinSize(150, 25);
