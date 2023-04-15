@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.net.*;
 
 import classes.CatApp;
 import javafx.application.Platform;
@@ -18,21 +20,30 @@ public class Middleware extends Thread {
   private final String HOST_ = "localhost";
 
   private boolean isServer_;
+  private boolean isUDP_;
 
   private ServerSocket serverSocket_;
   private Socket clientSocket_;
   private CatApp server_;
   private CatApp client_;
 
+  DatagramSocket socketUDP_;
+  InetAddress IPAddr_;
+  int sendPort_;
+  byte[] receiveData_;
+  byte[] sendData_;
+
   private PrintWriter out_;
   private BufferedReader in_;
 
-  public Middleware(boolean isServer) {
+  public Middleware(boolean isServer, boolean isUDP) {
     this.isServer_ = isServer;
+    this.isUDP_ = isUDP;
   }
 
-  public Middleware(boolean isServer, CatApp client, CatApp server) {
+  public Middleware(boolean isServer, boolean isUDP, CatApp client, CatApp server) {
     this.isServer_ = isServer;
+    this.isUDP_ = isUDP;
     this.client_ = client;
     this.server_ = server;
   }
@@ -42,10 +53,158 @@ public class Middleware extends Thread {
   }
 
   public void connect() {
-    if (isServer_) {
-      connectServer();
+    if (this.isUDP_) {
+      connectUDP();
     } else {
-      connectClient();
+      if (isServer_) {
+        connectServer();
+      } else {
+        connectClient();
+      }
+    }
+  }
+
+  public void runSocket() throws Exception {
+    if (this.isUDP_) {
+      runSocketUDP();
+    } else {
+      runSocketTCP();
+    }
+  }
+
+  public void addServer(CatApp server) {
+    this.server_ = server;
+  }
+
+  public void addClient(CatApp client) {
+    this.client_ = client;
+  }
+
+  public void disconnect() {
+    if (this.isUDP_) {
+      disconnectUDP();
+    } else {
+      disconnectTCP();
+    }
+  }
+
+  public void sendCommand(String msg) {
+    if (this.isUDP_) {
+      msg += " ";
+      try {
+        this.sendData_ = msg.getBytes();
+        DatagramPacket sendPacket;
+        if (this.isServer_) {
+          sendPacket = new DatagramPacket(sendData_, sendData_.length, this.IPAddr_, this.sendPort_);
+        } else {
+          sendPacket = new DatagramPacket(sendData_, sendData_.length, this.IPAddr_, PORT_);
+        }
+        socketUDP_.send(sendPacket);
+      } catch (Exception err) {
+        err.printStackTrace();
+      }
+    } else {
+      this.out_.println(msg);
+    }
+  }
+
+  public void runClient() {
+    this.client_.start(new Stage());
+  }
+
+  private void connectUDP() {
+    try {
+      runSocket();
+
+      new Thread(() -> {
+        try {
+          while (true) {
+            this.receiveData_ = new byte[1024];
+            this.sendData_ = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData_, receiveData_.length);
+
+            socketUDP_.receive(receivePacket);
+            if (this.isServer_) {
+              this.IPAddr_ = receivePacket.getAddress();
+              this.sendPort_ = receivePacket.getPort();
+            }
+            String sentence = new String(receivePacket.getData(), StandardCharsets.UTF_8);
+            handleCommand(sentence);
+          }
+        } catch (IOException err) {
+          err.printStackTrace();
+          disconnect();
+        }
+      }).start();
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+  }
+
+  private void runSocketTCP() throws Exception {
+    try {
+      if (isServer_) {
+        serverSocket_ = new ServerSocket(PORT_);
+        this.server_.appendLog("Server started");
+      } else {
+        clientSocket_ = new Socket(HOST_, PORT_);
+        this.client_.appendLog("Client created");
+      }
+    } catch (Exception err) {
+      throw new Exception(err.getMessage());
+    }
+  }
+
+  private void runSocketUDP() throws Exception {
+    try {
+      if (this.isServer_) {
+        this.socketUDP_ = new DatagramSocket(PORT_);
+        this.server_.appendLog("Server started");
+      } else {
+        this.socketUDP_ = new DatagramSocket();
+        this.IPAddr_ = InetAddress.getByName(HOST_);
+        socketUDP_.connect(IPAddr_, PORT_);
+        this.client_.appendLog("Client created");
+      }
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+  }
+
+  private void disconnectUDP() {
+    try {
+      if (socketUDP_ != null) {
+        socketUDP_.close();
+        socketUDP_ = null;
+      }
+
+      if (this.client_ != null)
+        this.client_.appendLog("Client stopped");
+      if (this.server_ != null)
+        this.server_.appendLog("Server stopped");
+
+    } catch (Exception err) {
+      System.out.println("=== Error in Middleware.disconnect() ===\n");
+      err.printStackTrace();
+    }
+  }
+
+  private void disconnectTCP() {
+    try {
+      if (clientSocket_ != null) {
+        clientSocket_.close();
+        clientSocket_ = null;
+        this.client_.appendLog("Disconnected from server");
+      }
+
+      if (serverSocket_ != null) {
+        serverSocket_.close();
+        serverSocket_ = null;
+        this.server_.appendLog("Server stopped");
+      }
+    } catch (IOException err) {
+      System.out.println("=== Error in Middleware.disconnect() ===\n");
+      err.printStackTrace();
     }
   }
 
@@ -82,7 +241,6 @@ public class Middleware extends Thread {
       System.out.println("=== Error in Middleware.connectServer() ===\n");
       err.printStackTrace();
     }
-
   }
 
   private void connectClient() {
@@ -111,29 +269,6 @@ public class Middleware extends Thread {
         err.printStackTrace();
       }
     }
-
-  }
-
-  public void runSocket() throws Exception {
-    try {
-      if (isServer_) {
-        serverSocket_ = new ServerSocket(PORT_);
-        this.server_.appendLog("Server started");
-      } else {
-        clientSocket_ = new Socket(HOST_, PORT_);
-        this.client_.appendLog("Client created");
-      }
-    } catch (Exception err) {
-      throw new Exception(err.getMessage());
-    }
-  }
-
-  public void addServer(CatApp server) {
-    this.server_ = server;
-  }
-
-  public void addClient(CatApp client) {
-    this.client_ = client;
   }
 
   private void handleEvents() {
@@ -143,15 +278,11 @@ public class Middleware extends Thread {
         if (msg == null)
           break;
 
-        if (this.server_ != null) {
+        if (this.server_ != null)
           handleCommand(msg);
-          this.server_.appendLog("Client: " + msg);
-        }
 
-        if (this.client_ != null) {
+        if (this.client_ != null)
           handleCommand(msg);
-          this.client_.appendLog("Server: " + msg);
-        }
 
       } catch (Exception err) {
         System.out.println("=== Error in Middleware.handleEvents() ===\n");
@@ -175,7 +306,10 @@ public class Middleware extends Thread {
           } else if ("size".equals(byCommand[0])) {
           } else if ("index".equals(byCommand[0])) {
             server_.getByIndex(command);
+          } else if ("connect".equals(byCommand[0])) {
+
           }
+          server_.appendLog("Client: " + command);
         }
 
         if (client_ != null) {
@@ -188,37 +322,10 @@ public class Middleware extends Thread {
           } else if ("index".equals(byCommand[0])) {
             client_.getByIndex(command);
           }
+          client_.appendLog("Server: " + command);
         }
 
       }
     });
   }
-
-  public void disconnect() {
-    try {
-      if (clientSocket_ != null) {
-        clientSocket_.close();
-        clientSocket_ = null;
-        this.client_.appendLog("Disconnected from server");
-      }
-
-      if (serverSocket_ != null) {
-        serverSocket_.close();
-        serverSocket_ = null;
-        this.server_.appendLog("Server stopped");
-      }
-    } catch (IOException err) {
-      System.out.println("=== Error in Middleware.disconnect() ===\n");
-      err.printStackTrace();
-    }
-  }
-
-  public void sendCommand(String msg) {
-    this.out_.println(msg);
-  }
-
-  public void runClient() {
-    this.client_.start(new Stage());
-  }
-
 }

@@ -33,6 +33,7 @@ public class CatApp extends Application {
   private int WIDTH_;
   private int HEIGHT_;
   private boolean isServer_;
+  private boolean isUDP_;
   private boolean isConnected_ = false;
 
   private Middleware socket_;
@@ -51,14 +52,16 @@ public class CatApp extends Application {
   private TextField index_;
   private Button connectButton_;
 
-  public CatApp(int w, int h, boolean isServer) {
+  public CatApp(int w, int h, boolean isServer, boolean isUDP) {
     this.WIDTH_ = w;
     this.HEIGHT_ = h;
     this.isServer_ = isServer;
+    this.isUDP_ = isUDP;
   }
 
-  public CatApp(boolean isServer) {
+  public CatApp(boolean isServer, boolean isUDP) {
     this.isServer_ = isServer;
+    this.isUDP_ = isUDP;
   }
 
   public static void main(String[] args) {
@@ -152,15 +155,15 @@ public class CatApp extends Application {
 
   public void addObject(String command) {
     String[] byCommand = command.split(" ");
+    int x = Integer.parseInt(byCommand[2]);
+    int y = Integer.parseInt(byCommand[3]);
 
     if ("img".equals(byCommand[1])) {
-      this.commonButtons_.createImg(this.view_, this.images_, Integer.parseInt(byCommand[2]),
-          Integer.parseInt(byCommand[3]));
+      this.commonButtons_.createImg(this.view_, this.images_, x, y);
     }
 
     if ("text".equals(byCommand[1])) {
-      this.commonButtons_.createText(this.view_, this.texts_, Integer.parseInt(byCommand[2]),
-          Integer.parseInt(byCommand[3]));
+      this.commonButtons_.createText(this.view_, this.texts_, x, y);
     }
   }
 
@@ -197,10 +200,10 @@ public class CatApp extends Application {
 
   private void setupSocket() {
     if (this.isServer_) {
-      socket_ = new Middleware(true);
+      socket_ = new Middleware(true, this.isUDP_);
       socket_.addServer(this);
     } else {
-      socket_ = new Middleware(false);
+      socket_ = new Middleware(false, this.isUDP_);
       socket_.addClient(this);
     }
     socket_.start();
@@ -256,7 +259,7 @@ public class CatApp extends Application {
       createClient.setMinSize(150, 25);
 
       createClient.setOnAction(e -> {
-        CatApp client = new CatApp(this.WIDTH_, this.HEIGHT_, false);
+        CatApp client = new CatApp(this.WIDTH_, this.HEIGHT_, false, this.isUDP_);
         client.start(new Stage());
       });
 
