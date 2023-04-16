@@ -58,13 +58,11 @@ $teachers = pg_query(
     margin: auto;
     background-color: rgba(170, 170, 170, 0.9);
     border-radius: 8px;
+    text-align: center;
   }
 
-  tr {
-    display: flex;
-    gap: 4px;
-    justify-content: center;
-    align-items: center;
+  td {
+    padding: 0 4px;
   }
 
   .footer {
@@ -134,8 +132,8 @@ $teachers = pg_query(
       </table>
 
       <div class="graph">
-        <h3>Количество сотрудников</h3>
-          <img id="image" src="chart.php" alt="Сотрудники">
+        <h3 class="rotate">Количество сотрудников</h3>
+        <img id="image" src="chart.php" alt="Сотрудники">
       </div>
 
       <h3 class="h3">Должность</h3>
