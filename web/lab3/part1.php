@@ -91,8 +91,12 @@ $teachers = pg_query(
     text-align: center;
   }
 
+  #img {
+    border-radius: 20px;
+  }
+
   .rotate {
-    transform: rotateZ(90);
+    transform: rotateZ(90) translateY(80px);
   }
 </style>
 
