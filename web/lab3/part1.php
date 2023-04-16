@@ -39,6 +39,11 @@ $teachers = pg_query(
     text-align: center;
   }
 
+  .h1 {
+    font-size: 30px;
+    padding: 4px;
+  }
+
   .main {
     padding: 8px 4px;
     background-color: #ccc;
@@ -48,9 +53,10 @@ $teachers = pg_query(
     justify-content: space-evenly;
   }
 
-  .h1 {
-    font-size: 30px;
-    padding: 4px;
+  .table {
+    padding: 8px;
+    margin: auto;
+    background-color: rgba(170, 170, 170, 0.9);
   }
 
   .footer {
@@ -69,7 +75,7 @@ $teachers = pg_query(
   }
 
   .graph {
-    position: relative;
+    margin: auto;
     max-width: fit-content;
   }
 </style>
@@ -84,36 +90,34 @@ $teachers = pg_query(
       <h1 class="p-4">Лабораторная работа №3</h1>
     </header>
 
-    <main>
-      <div>
-        <table>
-          <tr>
-            <th>ID</th>
-            <th>Должность</th>
-            <th>Учёная степень</th>
-            <th>Курс</th>
-            <th>Фамилия</th>
-            <th>Аудитория</th>
-          </tr>
-          <?php
-          while ($line = pg_fetch_array($teachers, null, PGSQL_ASSOC)) {
-            echo "\t<tr>\n";
-            foreach ($line as $col_value) {
-              ?>
-              <td>
-                <?= $col_value ?>
-              </td>
-              <?php
-            }
+    <main class="main">
+      <table class="table">
+        <tr>
+          <th>ID</th>
+          <th>Должность</th>
+          <th>Учёная степень</th>
+          <th>Курс</th>
+          <th>Фамилия</th>
+          <th>Аудитория</th>
+        </tr>
+        <?php
+        while ($line = pg_fetch_array($teachers, null, PGSQL_ASSOC)) {
+          echo "\t<tr>\n";
+          foreach ($line as $col_value) {
+            ?>
+            <td>
+              <?= $col_value ?>
+            </td>
+            <?php
           }
-          ?>
-          </tr>
-        </table>
-      </div>
+        }
+        ?>
+        </tr>
+      </table>
 
       <div class="graph">
-        <h3 id="v-legend">Количество сотрудников</h3>
-        <img id="image" src="chart.php" alt="">
+        <h3">Количество сотрудников</h3>
+          <img id="image" src="chart.php" alt="Сотрудники">
       </div>
 
       <h3>Должность</h3>
