@@ -68,6 +68,14 @@
   .ckeditor {
     padding: 8px;
   }
+
+  .submit_btn {
+    padding: 4px 0;
+  }
+
+  .img_cap {
+    max-width: 300px;
+  }
 </style>
 
 <head>
@@ -118,12 +126,12 @@
           <label for="username">Имя: </label>
           <input name="username" required placeholder="Ваше имя..." />
         </div>
-        <img src="/web/lab3/kcaptcha/index.php?<?php echo session_name() ?>=<?php echo session_id() ?>"></p>
+        <img class="img_cap" src="/web/lab3/kcaptcha/index.php?<?php echo session_name() ?>=<?php echo session_id() ?>"></p>
         <div>
           <label for="code">Код подтверждения: </label>
           <input name="code" required placeholder=" " />
         </div>
-        <button>Отправить</button>
+        <button class="submit_btn">Отправить</button>
       </form>
     </main>
 
