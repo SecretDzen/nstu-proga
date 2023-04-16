@@ -26,6 +26,12 @@ $teachers = pg_query(
     box-sizing: border-box;
   }
 
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
   .header {
     background-color: #333;
     color: #fff;
@@ -33,9 +39,25 @@ $teachers = pg_query(
     text-align: center;
   }
 
+  .main {
+    padding: 8px 4px;
+    background-color: #ccc;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
+
   .h1 {
     font-size: 30px;
     padding: 4px;
+  }
+
+  .footer {
+    background-color: #333;
+    color: #fff;
+    padding: 8px 4px;
+    text-align: center;
   }
 
   #v-legend {
@@ -57,44 +79,51 @@ $teachers = pg_query(
 </head>
 
 <body>
-  <header class="header">
-    <h1 class="p-4">Лабораторная работа №3</h1>
-  </header>
+  <div id="app">
+    <header class="header">
+      <h1 class="p-4">Лабораторная работа №3</h1>
+    </header>
 
-  <main>
-    <div>
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Должность</th>
-          <th>Учёная степень</th>
-          <th>Курс</th>
-          <th>Фамилия</th>
-          <th>Аудитория</th>
-        </tr>
-        <?php
-        while ($line = pg_fetch_array($teachers, null, PGSQL_ASSOC)) {
-          echo "\t<tr>\n";
-          foreach ($line as $col_value) {
-            ?>
-            <td>
-              <?= $col_value ?>
-            </td>
-            <?php
+    <main>
+      <div>
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Должность</th>
+            <th>Учёная степень</th>
+            <th>Курс</th>
+            <th>Фамилия</th>
+            <th>Аудитория</th>
+          </tr>
+          <?php
+          while ($line = pg_fetch_array($teachers, null, PGSQL_ASSOC)) {
+            echo "\t<tr>\n";
+            foreach ($line as $col_value) {
+              ?>
+              <td>
+                <?= $col_value ?>
+              </td>
+              <?php
+            }
           }
-        }
-        ?>
-        </tr>
-      </table>
-    </div>
+          ?>
+          </tr>
+        </table>
+      </div>
 
-    <div class="graph">
-      <h3 id="v-legend">Количество сотрудников</h3>
-      <img id="image" src="chart.php" alt="">
-    </div>
+      <div class="graph">
+        <h3 id="v-legend">Количество сотрудников</h3>
+        <img id="image" src="chart.php" alt="">
+      </div>
 
-    <h3>Должность</h3>
-  </main>
+      <h3>Должность</h3>
+    </main>
+
+    <footer class="footer">
+      <p>Лабораторные выполнил студент АВТ-019 - Попов П.С.</p>
+      <p>Вариант №8</p>
+    </footer>
+  </div>
 </body>
 
 <script>
