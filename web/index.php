@@ -6,6 +6,12 @@
     box-sizing: content-box;
   }
 
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
   .header {
     padding: 4px;
     text-align: center;
@@ -16,10 +22,10 @@
   .main {
     padding: 8px 4px;
     background-color: #ccc;
+    flex-grow: 1;
   }
 
   .article {
-    min-height: 50vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,21 +52,23 @@
 </head>
 
 <body>
-  <header class="header">
-    <h1>Список лабораторных</h1>
-  </header>
-  <main class="main">
-    <article class="article">
-      <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
-      <a class="link" href="/web/lab2/">Лабораторная работа №2</a>
-      <a class="link" href="/web/lab3/">Лабораторная работа №3</a>
-      <a class="link" href="/web/lab4/">Лабораторная работа №4</a>
-    </article>
-  </main>
-  <footer class="footer">
-    <p>Лабораторные выполнил студент АВТ-019 - Попов П.С.</p>
-    <p>Вариант №8</p>
-  </footer>
+  <div id="app">
+    <header class="header">
+      <h1>Список лабораторных</h1>
+    </header>
+    <main class="main">
+      <article class="article">
+        <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
+        <a class="link" href="/web/lab2/">Лабораторная работа №2</a>
+        <a class="link" href="/web/lab3/">Лабораторная работа №3</a>
+        <a class="link" href="/web/lab4/">Лабораторная работа №4</a>
+      </article>
+    </main>
+    <footer class="footer">
+      <p>Лабораторные выполнил студент АВТ-019 - Попов П.С.</p>
+      <p>Вариант №8</p>
+    </footer>
+  </div>
 
   <body>
 

@@ -96,7 +96,7 @@ $teachers = pg_query(
   }
 
   .rotate {
-    transform: rotateZ(90) translateY(80px);
+    transform: rotateZ(-90deg) translateY(80px);
   }
 </style>
 
@@ -107,7 +107,7 @@ $teachers = pg_query(
 <body>
   <div id="app">
     <header class="header">
-      <h1 class="p-4">Лабораторная работа №3</h1>
+      <h1 class="h1">Лабораторная работа №3</h1>
     </header>
 
     <main class="main">
