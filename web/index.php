@@ -23,13 +23,10 @@
     padding: 8px 4px;
     background-color: #ccc;
     flex-grow: 1;
-  }
-
-  .article {
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
     align-items: center;
-    justify-content: space-between;
   }
 
   .link {
@@ -57,12 +54,10 @@
       <h1>Список лабораторных</h1>
     </header>
     <main class="main">
-      <article class="article">
-        <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
-        <a class="link" href="/web/lab2/">Лабораторная работа №2</a>
-        <a class="link" href="/web/lab3/">Лабораторная работа №3</a>
-        <a class="link" href="/web/lab4/">Лабораторная работа №4</a>
-      </article>
+      <a class="link" href="/web/lab1/">Лабораторная работа №1</a>
+      <a class="link" href="/web/lab2/">Лабораторная работа №2</a>
+      <a class="link" href="/web/lab3/">Лабораторная работа №3</a>
+      <a class="link" href="/web/lab4/">Лабораторная работа №4</a>
     </main>
     <footer class="footer">
       <p>Лабораторные выполнил студент АВТ-019 - Попов П.С.</p>
