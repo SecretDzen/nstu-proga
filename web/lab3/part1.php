@@ -57,6 +57,14 @@ $teachers = pg_query(
     padding: 8px;
     margin: auto;
     background-color: rgba(170, 170, 170, 0.9);
+    border-radius: 8px;
+  }
+
+  tr {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
   }
 
   .footer {
@@ -75,8 +83,18 @@ $teachers = pg_query(
   }
 
   .graph {
-    margin: auto;
-    max-width: fit-content;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .h3 {
+    text-align: center;
+  }
+
+  .rotate {
+    transform: rotateZ(90);
   }
 </style>
 
@@ -116,11 +134,11 @@ $teachers = pg_query(
       </table>
 
       <div class="graph">
-        <h3">Количество сотрудников</h3>
+        <h3>Количество сотрудников</h3>
           <img id="image" src="chart.php" alt="Сотрудники">
       </div>
 
-      <h3>Должность</h3>
+      <h3 class="h3">Должность</h3>
     </main>
 
     <footer class="footer">
