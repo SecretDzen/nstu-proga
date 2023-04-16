@@ -37,7 +37,25 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form__flags {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .form__flags__div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
   }
 
   .footer {
@@ -68,25 +86,24 @@
     ?>
 
     <main class="main">
-      <form action="journal.php" method="post" target="_self">
+      <form action="journal.php" method="post" target="_self" class="form">
         <div class="form__flags">
           <p>Оформления текста:</p>
-          <div class="flex flex-row space-x-5">
-            <div class="form__flags__div flex flex-col items-center">
-              <p><input type="checkbox" id="cat" value="cat" name="styles[]"></P>
+          <div>
+            <div class="form__flags__div">
+              <p><input type="checkbox" id="cat" value="cat" name="styles[]"></p>
               <label for="cat">Котиками</label>
             </div>
-            <div class="form__flags__div flex flex-col items-center">
+            <div class="form__flags__div">
               <p><input type="checkbox" id="dogs" value="dog" name="styles[]"></p>
               <label for="dog">Собачками</label>
             </div>
-            <div class="form__flags__div flex flex-col items-center">
+            <div class="form__flags__div">
               <p><input type="checkbox" id="turtle" value="turtle" name="styles[]"></p>
               <label for="turtle">Черепахами</label>
             </div>
           </div>
         </div>
-        <br>
 
         <p>Комментарий: </p>
         <div id="ckeditor" class="ckeditor">
