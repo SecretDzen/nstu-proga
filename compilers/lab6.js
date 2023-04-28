@@ -185,7 +185,7 @@ var Cycle = class Cycle {
     setJump("Condition");
 
     popBreakable();
-    this.step = 1;
+    this.step_ = 1;
   }
 }
 

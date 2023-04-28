@@ -5,6 +5,7 @@ import spark.Spark;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Vector;
 
 import com.google.gson.JsonObject;
@@ -89,7 +90,17 @@ public class AppServer implements Runnable {
         paramObject.addProperty("data", "text removed");
       }
 
-      new FileWriter("/home/desolay/dev/nstu-works/cs/labscs/file.txt", false).close();
+      String objs = "";
+
+      for (String item : images_) {
+        objs += item + ":";
+      }
+      for (String item : texts_) {
+        objs += item + ":";
+      }
+
+      Files.writeString(path, objs);
+
       return paramObject;
     });
 
@@ -105,7 +116,13 @@ public class AppServer implements Runnable {
         texts_.add(msg);
       }
 
-      Files.writeString(path, msg + ":");
+      String list = Files.readString(path);
+      if (list.length() > 2) {
+        Files.writeString(path, list + msg + ":");
+      } else {
+        Files.writeString(path, msg + ":");
+      }
+
       paramObject.addProperty("data", "new object added");
       return paramObject;
     });

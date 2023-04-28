@@ -249,7 +249,6 @@ public class AppClient extends Application {
         appendLog("Server: " + res + "\n");
       }
     }
-
   }
 
   private Background createBackground() throws FileNotFoundException {
