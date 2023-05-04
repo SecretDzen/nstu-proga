@@ -1,43 +1,41 @@
 var ignoreLastWord;
 
-// 'https://dev.to/franklin030601/how-to-create-a-search-engine-with-debounce-effect-4hef'
+var Tracer = class Tracer {
+  constructor() {
+    this.history_ = []
+    this.rollbackPoint_ = []
+  }
 
-function Tracer() {
-  this.history_ = []
-  this.rollbackPoint_ = []
-}
-Tracer.prototype = {
   getAll() {
     return this.history_.reduce((acc, cur) => `${acc} ${cur}`, "")
-  },
+  }
 
   setHistory(history) {
     this.history_ = history
-  },
+  }
 
   getHistory() {
     return this.history_
-  },
+  }
 
   pushLexem(...lexs) {
     lexs.forEach((e) => this.history_.push(e))
-  },
+  }
 
   pushRollbackPoint() {
     this.rollbackPoint_.push(this.history_.length)
-  },
+  }
 
   rollback() {
-    const len = this.rollbackPoint_.pop();
+    const len = this.rollbackPoint_.pop()
     let oldHistory = Array(this.history_.length - len)
 
     for (let i = oldHistory.length - 1; i >= 0; i--)
       oldHistory[i] = this.history_.pop()
 
     return oldHistory
-  }  
+  }
 }
-
 
 var CMDS_ = {
   JUMP: "jump",
@@ -73,7 +71,7 @@ var writeInfo = () => {
   pushLexem('\n')
   errors.forEach((msg) => pushLexem(`${msg}\n`))
   errors = []
-    
+
   hasError = false
 }
 
@@ -88,31 +86,30 @@ var popStack = (stack, count) => {
 var getLabel = (label) => `#${label}_${peekStack(operandStack)}#`
 var setLabel = (label) => pushLexem(getLabel(label))
 
-var setJump = (label) => pushLexem(getLabel(label), CMDS.JUMP)
-var setJumpElse = (label) => pushLexem(getLabel(label), CMDS.JUMP_ELSE)
+var setJump = (label) => pushLexem(getLabel(label), CMDS_.JUMP)
+var setJumpElse = (label) => pushLexem(getLabel(label), CMDS_.JUMP_ELSE)
 
 var pushVar = (name) => pushLexem(`${name} ${peekStack()}`)
 var pushHistory = (history) => tracer.setHistory([...tracer.getHistory(), ...history])
 
 var pushExit = () => {
   exits.length === 0
-  ? writeError('No exits or function declarations')
-  : pushLexem(peekStack(exits), CMDS.JUMP)
+    ? writeError('No exits or function declarations')
+    : pushLexem(peekStack(exits), CMDS_.JUMP)
 }
 
 var pushBreakable = () => {
-    operandStack.push(++operandCount)
-    pushLexem(CMDS.SCOPE_IN)
-    let label = getLabel('Exit')
-    exits.push(label)
-  }
+  operandStack.push(++operandCount)
+  pushLexem(CMDS_.SCOPE_IN)
+  exits.push(getLabel('Exit'))
+}
 
 var popBreakable = () => {
-  putLabel('Exit')
+  setLabel('Exit')
   exits.pop()
 
   operandStack.pop()
-  pushLexem(CMDS.SCOPE_OUT)
+  pushLexem(CMDS_.SCOPE_OUT)
 }
 
 var getPriority = (lex) => {
@@ -137,7 +134,7 @@ var handleOp = (op) => {
     }
     else {
       break
-    } 
+    }
   }
 
   operatorStack.push(op)
@@ -166,29 +163,30 @@ var freeOperatorStack = () => {
   }
 }
 
-function Cycle() {
-    this.counter_ = ''
-    this.startValue_ = 0
-    this.endValue_ = 0
-    this.step_ = 1
-}
-Cycle.prototype = {
+var Cycle = class Cycle {
+  constructor() {
+    this.counter_ = '';
+    this.startValue_ = 0;
+    this.endValue_ = 0;
+    this.step_ = 1;
+  }
+
   form(body) {
-    pushHistory([this.counter_])
-    pushHistory([this.counter_, this.startValue_, "="])
+    pushHistory([this.counter_]);
+    pushHistory([this.counter_, this.startValue_, "="]);
 
-    putLabel("Condition")
-    pushHistory([this.counter_, this.endValue_, "<="])
-    setJumpElse("Exit")
+    setLabel("Condition");
+    pushHistory([this.counter_, this.endValue_, "<="]);
+    setJumpElse("Exit");
 
-    pushHistory(body)
+    pushHistory(body);
 
-    pushHistory([this.counter_, this.counter_, this.step_, "+", "="])
-    setJump("Condition")
+    pushHistory([this.counter_, this.counter_, this.step_, "+", "="]);
+    setJump("Condition");
 
-    popBreakable()
-    this.step = 1
-  },
+    popBreakable();
+    this.step = 1;
+  }
 }
 
 var tracer = new Tracer()
@@ -208,6 +206,5 @@ var clearAll = () => {
   cycle.counter_ = ''
   cycle.startValue_ = 0
   cycle.endValue_ = 0
-  cycle.step = 1
+  cycle.step_ = 1
 }
-
