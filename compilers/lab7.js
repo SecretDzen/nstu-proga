@@ -17,6 +17,7 @@ var TYPES = {
 }
 
 var binaryPattern = /[+\-*\/^<>]/
+var unaryPattern = /[!mp]/
 
 var Pseudo = class Pseudo {
   constructor(postfix) {
@@ -53,7 +54,6 @@ var Pseudo = class Pseudo {
 
   handlePostfix() {
     this.postfix_.forEach((el) => {
-      console.log(el);
       if (el.includes('#')) {
         this.handleElement(el)
       } else if (el.includes('JMP')) {
@@ -77,6 +77,10 @@ var Pseudo = class Pseudo {
     if (el === 'JMP') {
       this.pushPseudo('-----', el, 'tempVar#' + labelNum, 'END_COND#' + labelNum)
     }
+
+    if (el === 'JMP_F') {
+      this.pushPseudo('-----', el, '-----', 'STACK')
+    }
   }
 
   handleElement(el) {
@@ -89,21 +93,39 @@ var Pseudo = class Pseudo {
       this.vars_.push(name)
     }
 
+    if (label === 'RETURN') {
+      this.exprHandler(el)
+
+      const fn = this.pseudocode_.find((e) => e.label === `FUNC#${idx}`)
+
+      if (this.temp_.length) {
+        this.pushPseudo(el, 'MOVE', this.temp_.pop(), fn.fromOp)
+      } else {
+        this.pushPseudo(el, 'MOVE', 'STACK', fn.fromOp)
+      }
+    }
+
     if (label === 'ASSIGN') this.declareVar(el)
-    if (label === 'FN_ARGS') this.declareVar(el)
+
+    if (label === 'FN_ARGS') {
+      while (this.stack_.length) {
+        this.declareVar(el)
+      }
+    }
+
+    if (label === 'CALL_ARGS') {
+      this.exprHandler(el)
+
+      if (this.temp_.length !== 1) {
+        this.pushPseudo(el, 'MOVE', this.temp_.pop(), `var${idx}`)
+      } else {
+        this.pushPseudo(el, 'MOVE', 'STACK', `var${idx}`)
+      }
+      
+    }
 
     if (label === 'END_ASSIGN') {
-      while (this.stack_.length) {
-        let lex = this.stack_.shift()
-
-        if (lex.match(binaryPattern)) {
-          const left = (this.temp_.length) ? this.temp_.pop() : 'STACK'
-          const right = (this.temp_.length) ? this.temp_.pop() : 'STACK'
-          this.pushPseudo(el, lex, left, right)
-        } else {
-          this.temp_.push(lex);
-        }
-      }
+      this.exprHandler(el)
 
       if (this.temp_.length) {
         this.pushPseudo(el, 'MOVE', this.temp_.pop(), this.vars_.pop())
@@ -140,6 +162,9 @@ var Pseudo = class Pseudo {
         const left = (this.temp_.length) ? this.temp_.pop() : 'STACK'
         const right = (this.temp_.length) ? this.temp_.pop() : 'STACK'
         this.pushPseudo(el, lex, left, right)
+      } else if (lex.match(unaryPattern)) {
+        const left = (this.temp_.length) ? this.temp_.pop() : 'STACK'
+        this.pushPseudo(el, lex, left, 'STACK')
       } else {
         this.temp_.push(lex);
       }
@@ -171,6 +196,7 @@ var Tracer = class Tracer {
     this.loopTo_ = 0
     this.loopVar_ = ''
     this.loopDepth_ = 0
+    this.callFn_ = 0
   }
 
   getAll() {
@@ -192,6 +218,7 @@ var Tracer = class Tracer {
     this.loopFrom_ = 0
     this.loopTo_ = 0
     this.loopDepth_ = 0
+    this.callFn_ = 0
     this.loopVar_ = ''
   }
 
@@ -252,6 +279,22 @@ var Tracer = class Tracer {
     this.postfix_.push(lexem)
   }
 
+  endFunc() {
+    const lexem = { lex: `RETURN#${this.func_}`, type: TYPES.FUNCTION, priority: 0 }
+    this.postfix_.push(lexem)
+  }
+
+  callFunc() {
+    const lexem = { lex: `JMP_F`, type: TYPES.FUNCTION, priority: 0 }
+    this.postfix_.push(lexem)
+  }
+
+  callArgs() {
+    const lexem = { lex: `CALL_ARGS#${this.callFn_}`, type: TYPES.FN_ARGS, priority: 0 }
+    this.postfix_.push(lexem)
+    this.callFn_++
+  }
+
   fnArgs() {
     const lexem = { lex: `FN_ARGS#${this.func_}`, type: TYPES.FN_ARGS, priority: 0 }
     this.postfix_.push(lexem)
@@ -289,14 +332,6 @@ var Tracer = class Tracer {
     const lexem = { lex: `END_COND#${this.depth_}`, type: TYPES.CONDITION, priority: 0 }
     this.postfix_.push(lexem)
     this.depth_--
-  }
-
-  switch() {
-
-  }
-
-  endSwitch() {
-
   }
 
   loop() {
@@ -408,12 +443,10 @@ var getPrior = (lex) => {
     case "^":
       return 30
 
-    case "!":
-      return 40
-
     case "m":
+    case "!":
     case "p":
-      return 50
+      return 40
   }
 }
 
