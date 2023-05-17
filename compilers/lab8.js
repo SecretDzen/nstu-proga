@@ -13,7 +13,7 @@ var stringReg = /["][a-zA-Z]+["]/
 var VM = class VM {
   constructor(asm) {
     this.asm_ = asm // {label: '', code: '', op1: '', op2: ''}
-    this.vm_ = [] // {func: 'name', type: 'int', args: [{name: 'a1a', type: 'int', value: 0}], vars: [as args], value: 0}
+    this.vm_ = [] // {func: 'name', type: 'int', args: [{name: 'a1a', type: 'int', value: 0}], vars: [as args], value: null}
     this.tempVar_ = 0
     this.out_ = []
     this.isError_ = false
@@ -24,20 +24,26 @@ var VM = class VM {
     this.form()
     const title = '\n\n=== VM ===\n'
     const body = this.out_.join('\n')
-
     return title + body
   }
 
   form() {
+    console.log('start')
+
     for (let i = 0; i < this.asm_.length && !this.isError_; i++) {
+      console.log("on line: ")
+      console.log(this.asm_[i])
       if (this.asm_[i].code.match(actionReg)) {
         this.handleAction(this.asm_[i])
       } else if (this.asm_[i].code.match(binaryReg)) {
         this.handleBinary(this.asm_[i])
       }
+      console.log("success line")
 
-      if (this.isError_) this.throwError()
     }
+
+    console.log('end')
+    if (this.isError_) this.throwError()
   }
 
   handleBinary(line) {
@@ -46,7 +52,8 @@ var VM = class VM {
       const lastVar = this.peek(func.vars)
 
       if (line.op1 === 'STACK') {
-        console.log('= STACK')
+        this.setValue(lastVar, this.tempVar_)
+        this.tempVar_ = 0
       } else {
         this.setValue(lastVar, line.op1)
       }
@@ -57,7 +64,16 @@ var VM = class VM {
     }
 
     if (line.code === '+') {
+      let [num1, num2] = this.useBinaryAction(line.op1, line.op2)
 
+      if (!num2) {
+        num2 = this.tempVar_
+      }
+
+      this.tempVar_ = num1 + num2
+      if (!this.isError_) {
+        this.out_.push(`+ ${num1} ${num2}`)
+      }
     }
   }
 
@@ -119,8 +135,16 @@ var VM = class VM {
     return variable
   }
 
+  useUnaryAction() {
+
+  }
+
+  useBinaryAction(op1, op2) {
+    return [Number.parseInt(op1), Number.parseInt(op2)]
+  }
+
   typeCheck(obj, value) {
-    if (value.match(numReg)) {
+    if (`${value}`.match(numReg)) {
       return obj.type === 'int'
     } else if (value.match(stringReg)) {
       return obj.type === 'string'
@@ -156,7 +180,7 @@ var ASM = class ASM {
     const title = '\n\n=== ASM ===\n'
     const body = this.asmToVtb()
 
-    return title + body + vm.getAll()
+    return title + body
   }
 
   asmToVtb() {
