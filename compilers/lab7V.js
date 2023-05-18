@@ -1,173 +1,14 @@
 var ignoreLastWord;
 
-var idReg = /[a-z][0-9]{1,4}[a-z]/
+var idReg = /[a-z][0-9]{1,4}[A-Z]+/
 var binaryReg = /([+\-*^><=])|([&][&])|([|][|])|([!=><][=])/
-var unaryReg = /[mp!]/
-var actionReg = /[<][A-Z]+[>]/
+var unaryReg = /^[mp!]$/
+var actionReg = /^[A-Z]+$/
 var markReg = /[A-Z]+[#][0-9]/
 var goMarkReg = /[A-Z]+[#][0-9][:]/
 
 var numReg = /[0-9]([.][0-9])*/
 var stringReg = /["][a-zA-Z]+["]/
-
-var VM = class VM {
-  constructor(asm) {
-    this.asm_ = asm // {label: '', code: '', op1: '', op2: ''}
-    this.vm_ = [] // {func: 'name', type: 'int', args: [{name: 'a1a', type: 'int', value: 0}], vars: [as args], value: null}
-    this.tempVar_ = 0
-    this.out_ = []
-    this.isError_ = false
-    this.textError_ = ''
-  }
-
-  getAll() {
-    this.form()
-    const title = '\n\n=== VM ===\n'
-    const body = this.out_.join('\n')
-    return title + body
-  }
-
-  form() {
-    console.log('start')
-
-    for (let i = 0; i < this.asm_.length && !this.isError_; i++) {
-      console.log("on line: ")
-      console.log(this.asm_[i])
-      if (!this.asm_[i].code) break
-
-      if (this.asm_[i].code.match(actionReg)) {
-        this.handleAction(this.asm_[i])
-      } else if (this.asm_[i].code.match(binaryReg)) {
-        this.handleBinary(this.asm_[i])
-      }
-      console.log("success line")
-
-    }
-
-    console.log('end')
-    if (this.isError_) this.throwError()
-  }
-
-  handleBinary(line) {
-    if (line.code === '=') {
-      const func = this.peek(this.vm_)
-      const lastVar = this.peek(func.vars)
-
-      if (line.op1 === 'STACK') {
-        this.setValue(lastVar, this.tempVar_)
-        this.tempVar_ = 0
-      } else {
-        this.setValue(lastVar, line.op1)
-      }
-
-      if (!this.isError_) {
-        this.out_.push(`= ${lastVar.value} ${lastVar.name}`)
-      }
-    }
-
-    if (line.code === '+') {
-      let [num1, num2] = this.useBinaryAction(line.op1, line.op2)
-
-      if (!num2) {
-        num2 = this.tempVar_
-      }
-
-      this.tempVar_ = num1 + num2
-      if (!this.isError_) {
-        this.out_.push(`+ ${num1} ${num2}`)
-      }
-    }
-  }
-
-  handleAction(line) {
-    if (line.code === '<FUNC>') {
-      const func = {
-        name: line.op1,
-        type: line.op2,
-        args: [],
-        vars: [],
-        value: null
-      }
-
-      this.vm_.push(func)
-    }
-
-    if (line.code === '<VAR>') {
-      const initVal = this.initValue(line.op2)
-      const variable = { name: line.op1, type: line.op2, value: initVal }
-
-      const func = this.peek(this.vm_)
-      func.vars.push(variable)
-    }
-
-    if (line.code === '<RET>') {
-      const func = this.peek(this.vm_)
-
-      if (line.op1 === 'STACK') {
-        console.log('RETURN STACK')
-      } else if (line.op1.match(idReg)) {
-        const variable = this.findVar(func, line.op1)
-        if (variable) this.setValue(func, variable.value)
-      } else {
-        this.setValue(func, line.op1)
-      }
-
-      if (!this.isError_) {
-        this.out_.push(`RET ${func.value} ${func.name}`)
-      }
-    }
-  }
-
-  setValue(obj, value) {
-    if (!this.typeCheck(obj, value)) {
-      this.isError_ = true
-      this.textError_ = `ERR ${obj.name} type is ${obj.type}. Value passed: ${value}`
-    }
-    obj.value = value
-  }
-
-  findVar(func, varName) {
-    const variable = func.vars.find((e) => e.name === varName)
-
-    if (!variable) {
-      this.isError_ = true
-      this.textError_ = `ERR no such variable ${varName}`
-    }
-
-    return variable
-  }
-
-  useUnaryAction() {
-
-  }
-
-  useBinaryAction(op1, op2) {
-    return [Number.parseInt(op1), Number.parseInt(op2)]
-  }
-
-  typeCheck(obj, value) {
-    if (`${value}`.match(numReg)) {
-      return obj.type === 'int'
-    } else if (value.match(stringReg)) {
-      return obj.type === 'string'
-    } else {
-      return obj.type === 'char'
-    }
-  }
-
-  peek(arr) {
-    return arr[arr.length - 1]
-  }
-
-  initValue(type) {
-    return type === 'int' ? 0 : ''
-  }
-
-  throwError() {
-    this.out_.push(this.textError_)
-    this.out_.push(`ERR Aborting...`)
-  }
-}
 
 var ASM = class ASM {
   constructor(rpn) {
@@ -179,8 +20,7 @@ var ASM = class ASM {
 
   getAll() {
     this.form()
-    const vm = new VM(this.asm_)
-    const title = '\n\n=== ASM ===\n'
+    const title = '\n\nПсевдокод\n'
     const body = this.asmToVtb()
 
     return title + body
@@ -197,11 +37,12 @@ var ASM = class ASM {
   form() {
     while (this.rpn_.length) {
       const item = this.rpn_.shift()
-
       if (item.match(actionReg)) {
         this.handleAction(item)
       } else if (item.match(binaryReg)) {
         this.handleBinary(item)
+      } else if (item.match(unaryReg)) {
+        this.handleUnary(item)
       } else if (item.match(goMarkReg)) {
         this.handleGoMark(item)
       } else {
@@ -225,10 +66,17 @@ var ASM = class ASM {
     this.asm_.push(item)
   }
 
+  handleUnary(code) {
+    const label = this.useLabel()
+    const op1 = this.useUnaryAction()
+    const item = { label, code, op1, op2: 'STACK' }
+    this.asm_.push(item)
+  }
+
   handleAction(act) {
     const label = this.useLabel()
 
-    if (act === '<FUNC>' || act === '<VAR>' || act === '<JMPF>') {
+    if (act === 'FUNC' || act === 'VAR' || act === 'JMPF') {
       const [op1, op2] = this.useBinaryAction()
       const item = { label, code: act, op1, op2 }
       this.asm_.push(item)
@@ -293,7 +141,7 @@ var RPN = class RPN {
   }
 
   getAll() {
-    const title = '=== RPN ===\n'
+    const title = 'Постфикс:\n'
     const body = this.rpn_.join(' ')
     const asm = new ASM(body)
 
@@ -362,34 +210,53 @@ var RPN = class RPN {
   action(name) {
     if (name === 'arg') {
       this.popStack(0)
-      this.rpn_.push('<ARG>')
+      this.rpn_.push('ARG')
     }
 
     if (name === 'carg') {
       this.popStack(0)
-      this.rpn_.push('<CARG>')
+      this.rpn_.push('CARG')
     }
 
     if (name === 'call') {
       this.popStack(0)
-      this.rpn_.push('<CALL>')
+      this.rpn_.push('CALL')
     }
 
     if (name === 'ret') {
       this.popStack(0)
-      this.rpn_.push('<RET>')
+      this.rpn_.push('RET')
       this.rpn_.push('ENDFN#' + this.funcCounter_)
-      this.rpn_.push('<JMP>')
+      this.rpn_.push('JMP')
     }
 
     if (name === 'var') {
+      let temp = []
+
+      while (true) {
+        let lex = this.rpn_[this.rpn_.length - 1]
+        if (lex.includes('#') || lex.match(actionReg) || lex === '=') {
+          break
+        }
+        temp.push(this.rpn_.pop())
+      }
+
+      const variable = this.stack_.pop()
+      const type = this.stack_.pop()
+
+      this.rpn_.push(variable)
+      this.rpn_.push(type)
+      this.rpn_.push('VAR')
+
+      while (temp.length) this.rpn_.push(temp.pop())
+
       this.popStack(0)
-      this.rpn_.push('<VAR>')
+      this.rpn_.push('=')
     }
 
     if (name === 'func') {
       this.popStack(0)
-      this.rpn_.push('<FUNC>')
+      this.rpn_.push('FUNC')
     }
 
     if (name === 'funcL') {
@@ -401,22 +268,17 @@ var RPN = class RPN {
       this.funcCounter_++
     }
 
-    if (name === '=') {
-      this.popStack(0)
-      this.rpn_.push('=')
-    }
-
-    if (name === 'by') {
+    if (name === 'at') {
       this.depth_++
       this.popStack(0)
       this.rpn_.push('ELSE#' + this.depth_)
-      this.rpn_.push('<JMPF>')
+      this.rpn_.push('JMPF')
     }
 
     if (name === 'else') {
       this.popStack(0)
       this.rpn_.push('END#' + this.depth_)
-      this.rpn_.push('<JMP>')
+      this.rpn_.push('JMP')
       this.rpn_.push(`ELSE#${this.depth_}:`)
     }
 
@@ -426,45 +288,67 @@ var RPN = class RPN {
       this.depth_--
     }
 
-    if (name === 'loop') {
-      this.depth_++
-      this.loopDepth_ = this.depth_
+    if (name === 'step') {
+      const step = this.stack_.pop()
+      this.rpn_[this.rpn_.length - 6] = step
+    }
 
+    if (name === 'loop') {
       this.loopTo_ = this.stack_.pop()
       this.loopFrom_ = this.stack_.pop()
+      this.loopVar_ = this.stack_.pop()
+      const loopVarType = this.stack_.pop()
 
-      this.action('var')
-      this.loopVar_ = this.rpn_[this.rpn_.length - 3]
+      let temp = []
+
+      while (true) {
+        let lex = this.rpn_[this.rpn_.length - 1]
+        if (lex === `LOOP#${this.loopDepth_}:`) break
+        temp.push(this.rpn_.pop())
+      }
+
+      const looped = this.rpn_.pop()
+
+      this.rpn_.push(this.loopVar_)
+      this.rpn_.push(loopVarType)
+      this.rpn_.push('VAR')
 
       this.rpn_.push(this.loopFrom_)
       this.rpn_.push('=')
-
-      this.rpn_.push(`LOOP#${this.loopDepth_}:`)
-
+      
+      this.rpn_.push(looped)
       this.rpn_.push(this.loopVar_)
       this.rpn_.push(this.loopTo_)
       this.rpn_.push('<')
-
+      
       this.rpn_.push(`END#${this.loopDepth_}`)
-      this.rpn_.push(`<JMPF>`)
-    }
+      this.rpn_.push(`JMPF`)
 
-    if (name === 'endLoop') {
+      while (temp.length) this.rpn_.push(temp.pop())
+      
+      this.rpn_.push(this.loopVar_)
       this.rpn_.push(this.loopVar_)
       this.rpn_.push('1')
       this.rpn_.push('+')
       this.rpn_.push('=')
 
       this.rpn_.push(`LOOP#${this.loopDepth_}`)
-      this.rpn_.push(`<JMP>`)
+      this.rpn_.push(`JMP`)
       this.rpn_.push(`END#${this.loopDepth_}:`)
 
       this.depth_--
     }
 
+    if (name === 'loopL') {
+      this.depth_++
+      this.loopDepth_ = this.depth_
+
+      this.rpn_.push(`LOOP#${this.loopDepth_}:`)
+    }
+
     if (name === 'break') {
       this.rpn_.push(`END#${this.loopDepth_}`)
-      this.rpn_.push(`<JMP>`)
+      this.rpn_.push(`JMP`)
     }
   }
 
