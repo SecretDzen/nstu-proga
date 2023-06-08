@@ -122,6 +122,7 @@ var RPN = class RPN {
     this.stack_ = [];
     this.temp_ = [];
     this.depth_ = 0;
+    this.isError = false;
 
     this.funcCounter_ = 0;
     this.loopDepth_ = 0;
@@ -293,7 +294,7 @@ var RPN = class RPN {
     }
 
     if (name === "break") {
-      if (this.depth_ === 0) {
+      if (this.loopDepth_ === 0) {
         this.isError = true;
       }
       this.rpn_.push(`END#${this.loopDepth_}`);
