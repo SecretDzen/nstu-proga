@@ -291,6 +291,7 @@ var RPN = class RPN {
       this.rpn_.push(`<JMP>`);
       this.rpn_.push(`END#${this.loopDepth_}:`);
       this.depth_--;
+      this.loopDepth_ = 0;
     }
 
     if (name === "break") {
