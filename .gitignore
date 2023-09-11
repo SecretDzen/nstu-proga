@@ -2,3 +2,4 @@
 config.php
 node_modules
 web/utils/connection.php
+.Rproj.user
