@@ -16,7 +16,6 @@ INSERT INTO
 VALUES
     ('novel');
 
-
 INSERT INTO
     v4.city (name)
 VALUES
@@ -34,7 +33,7 @@ INSERT INTO
     v4.book
     (name, circulation, price, pages, release_date, authorID, genreID, publHouseID)
 VALUES
-    ('Work Medicine', 15999, 300, 299, '2021-10-21', 5, 2, 13);
+    ('Work Medicine', 15999, 300, 299, '2021-10-21', 5, 2, 13),
     ('Journal Wokrkout', 33000, 900, 500, '2018-03-11', 3, 6, 11),
     ('Deadly vibe', 23000, 400, 600, '2019-08-11', 3, 6, 12),
     ('Maximaze result', 45000, 180, 800, '2020-11-28', 3, 6, 11),

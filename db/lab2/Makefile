@@ -1,5 +1,5 @@
 .PHONY: part1 part2 part3 part4
-FLAGS=-U ex4to -d labs_db -q
+FLAGS=-U desolaye -d labs_db -q
 
 all: part1 part2 part3 part4
 

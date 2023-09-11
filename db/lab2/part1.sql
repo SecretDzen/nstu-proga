@@ -2,13 +2,13 @@ DO
 $do$
 BEGIN
     IF EXISTS (SELECT FROM pg_user
-        WHERE  usename = 'ex4to'
+        WHERE  usename = 'desolaye'
         ) THEN
-        RAISE NOTICE 'SKIP ROLE MAKER!';
+        RAISE NOTICE 'User already exists';
     ELSE
-        CREATE ROLE ex4to WITH CREATEDB NOCREATEROLE LOGIN PASSWORD '123456';
+        CREATE ROLE desolaye WITH CREATEDB NOCREATEROLE LOGIN PASSWORD '123456';
     END IF;
 END
 $do$;
 
-ALTER DATABASE labs_db OWNER TO ex4to;
+ALTER DATABASE labs_db OWNER TO desolaye;

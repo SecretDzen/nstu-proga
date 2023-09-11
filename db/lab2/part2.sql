@@ -1,5 +1,5 @@
 DROP SCHEMA IF EXISTS v4 CASCADE;
-CREATE SCHEMA IF NOT EXISTS v4 AUTHORIZATION ex4to;
+CREATE SCHEMA IF NOT EXISTS v4 AUTHORIZATION desolaye;
 
 CREATE TYPE v4.genre_name AS ENUM ('detective', 'science fiction', 'comedy', 'melodrama', 'thriller');
 
