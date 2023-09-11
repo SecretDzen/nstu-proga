@@ -1,0 +1,53 @@
+?- trace, pow_non_tail(10, 3, Result).
+   Call: (11) pow_non_tail(10, 3, _30702) ? creep
+   Call: (12) _32138 is 3+ -1 ? creep
+   Exit: (12) 2 is 3+ -1 ? creep
+   Call: (12) pow_non_tail(10, 2, _33760) ? creep
+   Call: (13) _34582 is 2+ -1 ? creep
+   Exit: (13) 1 is 2+ -1 ? creep
+   Call: (13) pow_non_tail(10, 1, _36204) ? creep
+   Call: (14) _37026 is 1+ -1 ? creep
+   Exit: (14) 0 is 1+ -1 ? creep
+   Call: (14) pow_non_tail(10, 0, _38648) ? creep
+   Exit: (14) pow_non_tail(10, 0, 1) ? creep
+   Call: (14) _36204 is 1*10 ? creep
+   Exit: (14) 10 is 1*10 ? creep
+   Exit: (13) pow_non_tail(10, 1, 10) ? creep
+   Call: (13) _33760 is 10*10 ? creep
+   Exit: (13) 100 is 10*10 ? creep
+   Exit: (12) pow_non_tail(10, 2, 100) ? creep
+   Call: (12) _30702 is 100*10 ? creep
+   Exit: (12) 1000 is 100*10 ? creep
+   Exit: (11) pow_non_tail(10, 3, 1000) ? creep
+Result = 1000 .
+
+[trace]  ?- 
+|    
+|    trace, pow_tail(10, 3, 1, Result).
+   Call: (11) pow_tail(10, 3, 1, _50296) ? creep
+   Call: (12) 3>0 ? creep
+   Exit: (12) 3>0 ? creep
+   Call: (12) _53344 is 3+ -1 ? creep
+   Exit: (12) 2 is 3+ -1 ? creep
+   Call: (12) _54966 is 1*10 ? creep
+   Exit: (12) 10 is 1*10 ? creep
+   Call: (12) pow_tail(10, 2, 10, _50296) ? creep
+   Call: (13) 2>0 ? creep
+   Exit: (13) 2>0 ? creep
+   Call: (13) _59038 is 2+ -1 ? creep
+   Exit: (13) 1 is 2+ -1 ? creep
+   Call: (13) _60660 is 10*10 ? creep
+   Exit: (13) 100 is 10*10 ? creep
+   Call: (13) pow_tail(10, 1, 100, _50296) ? creep
+   Call: (14) 1>0 ? creep
+   Exit: (14) 1>0 ? creep
+   Call: (14) _64732 is 1+ -1 ? creep
+   Exit: (14) 0 is 1+ -1 ? creep
+   Call: (14) _66354 is 100*10 ? creep
+   Exit: (14) 1000 is 100*10 ? creep
+   Call: (14) pow_tail(10, 0, 1000, _50296) ? creep
+   Exit: (14) pow_tail(10, 0, 1000, 1000) ? creep
+   Exit: (13) pow_tail(10, 1, 100, 1000) ? creep
+   Exit: (12) pow_tail(10, 2, 10, 1000) ? creep
+   Exit: (11) pow_tail(10, 3, 1, 1000) ? creep
+Result = 1000 

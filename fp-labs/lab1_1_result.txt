@@ -1,0 +1,29 @@
+?- are_siblings("Михаил", "Ольга").
+true.
+
+?- are_siblings("Татьяна", Who).
+Who = "Михаил" ;
+Who = "Ольга" ;
+false.
+
+?- are_cousins("Татьяна", Who).
+Who = "Андрей" ;
+false.
+
+?- is_aunt_or_uncle(Who, "Андрей").
+Who = "Анна" ;
+Who = "Иван" ;
+Who = "Максим".
+
+?- is_parent_in_law(Who, "Максим").
+Who = "Том Браун" ;
+Who = "Анастасия" ;
+false.
+
+?- is_child_in_law(Who, "Том Браун").
+Who = "Максим" ;
+false.
+
+?- are_married("Артем", Who).
+Who = "Наталья" ;
+false.
