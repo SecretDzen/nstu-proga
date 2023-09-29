@@ -23,8 +23,7 @@ FROM costumes AS p
          INNER JOIN countries c ON c.id = ps.country_id
          LEFT JOIN sales s ON p.id = s.costume_id;
 
--- Получить список, отсортированный: 
-
+-- Получить список, отсортированный:
 -- по дате выпуска
 SELECT * FROM costumes_info ORDER BY produce_date LIMIT 15;
 -- по наименованию
@@ -140,3 +139,7 @@ WITH popular AS (SELECT * FROM costumes_info
 SELECT * FROM popular
     WHERE price = (SELECT MAX(price) FROM popular)
     AND age = 19;
+
+
+
+314 v 6:30
