@@ -29,6 +29,10 @@ summary(data)
 summary(group_one)
 summary(group_two)
 
+data <- subset(data, satisfactionRate <= 100)
+group_one <- subset(data, group == 1)
+group_two <- subset(data, group == 2)
+
 base_stats <- function(x) {
   if(is.numeric(x)) {
     s<-sd(x)
@@ -79,8 +83,9 @@ barplot_builder <- function(table_row, main) {
   )
 }
 
-boxplot_builder <- function(table_row_k, table_row_n, xlab, ylab, data) {
+boxplot_builder <- function(table_row_k, table_row_n, main, xlab, ylab, data) {
   boxplot(table_row_n ~ table_row_k,
+          main = main,
           xlab = xlab,
           ylab = ylab,
           col = "#AACCFF",
@@ -90,6 +95,7 @@ boxplot_builder <- function(table_row_k, table_row_n, xlab, ylab, data) {
 
 chisq_builder <- function(data) {
   factor_names <- names(data[,unlist(lapply(data, is.factor))])
+  factor_names <- subset(factor_names, factor_names != 'group')
 
   chi_results <- matrix(NA,
                         nrow = length(factor_names),
@@ -101,7 +107,6 @@ chisq_builder <- function(data) {
 
   for (col_name in factor_names){
     for (col_name2 in factor_names) {
-      if (col_name == 'group' || col_name == col_name2 || col_name2 == 'group') next
       chi_results[col_name,col_name2] <- chisq.test(table(data[,col_name],data[,col_name2]))$p.value
     } 
   }
@@ -111,7 +116,8 @@ chisq_builder <- function(data) {
 
 fisher_builder <- function(data) {
   factor_names <- names(data[,unlist(lapply(data, is.factor))])
-  
+  factor_names <- subset(factor_names, factor_names != 'group')
+
   fisher_results <- matrix(NA,
                         nrow = length(factor_names),
                         ncol = length(factor_names)
@@ -122,8 +128,7 @@ fisher_builder <- function(data) {
   
   for (col_name in factor_names){
     for (col_name2 in factor_names) {
-      if (col_name == 'group' || col_name == col_name2 || col_name2 == 'group') next
-      fisher_results[col_name, col_name2] <- fisher.test(table(data[,col_name], data[,col_name2]))$p.value
+      fisher_results[col_name, col_name2] <- fisher.test(table(data[,col_name], data[,col_name2]), workspace = 2e8)$p.value
     } 
   }
   
@@ -132,12 +137,13 @@ fisher_builder <- function(data) {
 
 cor_builder <- function(data) {
   M <- data[,unlist(lapply(data, is.numeric))]
+  M <- subset(M, select = -id)
 
-  N1 <- cor(M,use="pairwise.complete.obs")
+  N1 <- cor(M,use="pairwise.complete.obs", method="pearson")
   N2 <- cor(M,use="pairwise.complete.obs",method="spearman")
   N3 <- cor(M,use="pairwise.complete.obs",method="kendall")
 
-  print("General")
+  print("Pearson")
   print(N1)
   print("Spearman")
   print(N2)
@@ -147,12 +153,18 @@ cor_builder <- function(data) {
 
 pcor_builder <- function(data, depend) {
   M <- data[,unlist(lapply(data, is.numeric))]
+  M <- subset(M, select = -id)
+
   pcor(depend, cov(M))
 }
 
-corrplot_builder <- function(data, colors) {
+corrplot_builder <- function(data, method) {
+  colors <- c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA")
+  
   M <- data[,unlist(lapply(data, is.numeric))]
-  N1 <- cor(M, use="pairwise.complete.obs")
+  M <- subset(M, select = -id)
+
+  N1 <- cor(M, use="pairwise.complete.obs", method = method)
   
   col <- colorRampPalette(colors)
   corrplot(N1, method="color", col=NULL,  
@@ -162,6 +174,8 @@ corrplot_builder <- function(data, colors) {
              diag=FALSE 
   )
 }
+
+# =============================================================================
 
 base_stats(data$age)
 base_stats(data$purchasesYearly)
@@ -210,14 +224,26 @@ pie_builder(group_two$satisfactionDegree,
             c("average", "high", "low")
 )
 
-barplot_builder(group_one$satisfactionDegree, "Степень удовлетворенности услугами")
-barplot_builder(group_two$satisfactionDegree, "Степень удовлетворенности услугами")
+par(mfrow = c(1, 2)) 
+barplot_builder(subset(group_one, sex == 1)$satisfactionRate, "Степень удовлетворенности услугами")
+barplot_builder(subset(group_one, sex == 2)$satisfactionRate, "Степень удовлетворенности услугами")
 
-boxplot_builder(group_one$sex, group_one$satisfactionRate, "s", "a", group_one)
-boxplot_builder(group_two$sex, group_two$satisfactionRate, "s", "a", group_two)
+barplot_builder(subset(group_two, sex == 1)$satisfactionRate, "Степень удовлетворенности услугами")
+barplot_builder(subset(group_two, sex == 2)$satisfactionRate, "Степень удовлетворенности услугами")
 
-hist(data$purchasesYearly, freq=FALSE, breaks=20, col = "#AACCFF", xlab="x", ylab="y", main="main")
-lines(density(data$satisfactionRate))
+par(mfrow = c(1, 1))
+boxplot_builder(group_one$sex, group_one$satisfactionRate, "Ящик с усами", "Пол", "Удовлетворенность услугами",  group_one)
+boxplot_builder(group_two$sex, group_two$satisfactionRate, "Ящик с усами", "Пол", "Удовлетворенность услугами", group_two)
+
+hist(data$purchasesYearly,
+     freq=FALSE,
+     breaks=20,
+     col = "#AACCFF",
+     xlab="Диапазон годовой покупки",
+     main="Гистограмма распределения"
+)
+
+lines(density(data$purchasesYearly))
 
 pairs(~data$age + data$purchasesYearly + data$averagePurchasesPrice
       + data$averagePagesPerVisit + data$averagePagesPerVisit
@@ -237,7 +263,16 @@ summary(aov_model)
 cor_builder(group_one)
 cor_builder(group_two)
 
-pcor_builder(group_one, c(3, 4, 5))
-corrplot_builder(group_one, c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+pcor_builder(group_one, c(4, 6, 1, 2, 3, 5))
+pcor_builder(group_two, c(4, 6, 1, 2, 3, 5))
 
-cor.test(group_one$purchasesYearly, group_one$age)
+corrplot_builder(group_one, "pearson")
+corrplot_builder(group_one, "kendall")
+corrplot_builder(group_one, "spearman")
+
+corrplot_builder(group_two, "pearson")
+corrplot_builder(group_two, "kendall")
+corrplot_builder(group_two, "spearman")
+
+cor.test(group_one$satisfactionRate, group_one$averagePagesPerVisit)
+cor.test(group_two$satisfactionRate, group_two$averagePagesPerVisit)
