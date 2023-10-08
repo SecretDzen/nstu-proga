@@ -235,9 +235,9 @@ par(mfrow = c(1, 1))
 boxplot_builder(group_one$sex, group_one$satisfactionRate, "Ящик с усами", "Пол", "Удовлетворенность услугами",  group_one)
 boxplot_builder(group_two$sex, group_two$satisfactionRate, "Ящик с усами", "Пол", "Удовлетворенность услугами", group_two)
 
-hist(data$purchasesYearly,
+hist(group_one$purchasesYearly,
      freq=FALSE,
-     breaks=20,
+     breaks=8,
      col = "#AACCFF",
      xlab="Диапазон годовой покупки",
      main="Гистограмма распределения"
@@ -245,9 +245,25 @@ hist(data$purchasesYearly,
 
 lines(density(data$purchasesYearly))
 
-pairs(~data$age + data$purchasesYearly + data$averagePurchasesPrice
-      + data$averagePagesPerVisit + data$averagePagesPerVisit
-      + data$satisfactionRate,
+hist(group_two$purchasesYearly,
+     freq=FALSE,
+     breaks=8,
+     col = "#AACCFF",
+     xlab="Диапазон годовой покупки",
+     main="Гистограмма распределения"
+)
+
+lines(density(data$purchasesYearly))
+
+pairs(~group_one$age + group_one$purchasesYearly + group_one$averagePurchasesPrice
+      + group_one$averagePagesPerVisit + group_one$averagePagesPerVisit
+      + group_one$satisfactionRate,
+      lower.panel = NULL
+)
+
+pairs(~group_two$age + group_two$purchasesYearly + group_two$averagePurchasesPrice
+      + group_two$averagePagesPerVisit + group_two$averagePagesPerVisit
+      + group_two$satisfactionRate,
       lower.panel = NULL
 )
 
@@ -263,12 +279,12 @@ summary(aov_model)
 cor_builder(group_one)
 cor_builder(group_two)
 
-pcor_builder(group_one, c(4, 6, 1, 2, 3, 5))
-pcor_builder(group_two, c(4, 6, 1, 2, 3, 5))
+pcor_builder(group_one, c(4, 6, 2, 3, 5))
+pcor_builder(group_two, c(4, 6, 2, 3, 5))
 
 corrplot_builder(group_one, "pearson")
-corrplot_builder(group_one, "kendall")
 corrplot_builder(group_one, "spearman")
+corrplot_builder(group_one, "kendall")
 
 corrplot_builder(group_two, "pearson")
 corrplot_builder(group_two, "kendall")
