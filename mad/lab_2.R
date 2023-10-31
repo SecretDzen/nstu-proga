@@ -1,0 +1,198 @@
+install.packages("gplots")
+install.packages("NbClust")
+install.packages("factoextra")
+
+library(gplots)
+library(NbClust)
+library(factoextra)
+library(cluster) 
+
+data <- read.table('./dataset_l2.csv',
+                   header = TRUE,
+                   sep = ';',
+                   stringsAsFactors = FALSE
+)
+
+View(data)
+
+data$profession <- as.factor(data$profession)
+data$gender <- as.factor(data$gender)
+
+summary(data)
+str(data)
+
+# =========================================
+
+# fix the functions
+fviz_nbclust <- function (x, FUNcluster = NULL, method = c("silhouette", "wss", 
+                                                           "gap_stat"), diss = NULL, k.max = 10, nboot = 100, verbose = interactive(), 
+                          barfill = "steelblue", barcolor = "steelblue", linecolor = "steelblue", 
+                          print.summary = TRUE, ...) 
+{
+  set.seed(123)
+  if (k.max < 2) 
+    stop("k.max must bet > = 2")
+  method = match.arg(method)
+  if (!inherits(x, c("data.frame", "matrix")) & !("Best.nc" %in% 
+                                                  names(x))) 
+    stop("x should be an object of class matrix/data.frame or ", 
+         "an object created by the function NbClust() [NbClust package].")
+  if (inherits(x, "list") & "Best.nc" %in% names(x)) {
+    best_nc <- x$Best.nc
+    if (any(class(best_nc) == "numeric") ) 
+      print(best_nc)
+    else if (any(class(best_nc) == "matrix") )
+      .viz_NbClust(x, print.summary, barfill, barcolor)
+  }
+  else if (is.null(FUNcluster)) 
+    stop("The argument FUNcluster is required. ", "Possible values are kmeans, pam, hcut, clara, ...")
+  else if (!is.function(FUNcluster)) {
+    stop("The argument FUNcluster should be a function. ", 
+         "Check if you're not overriding the specified function name somewhere.")
+  }
+  else if (method %in% c("silhouette", "wss")) {
+    if (is.data.frame(x)) 
+      x <- as.matrix(x)
+    if (is.null(diss)) 
+      diss <- stats::dist(x)
+    v <- rep(0, k.max)
+    if (method == "silhouette") {
+      for (i in 2:k.max) {
+        clust <- FUNcluster(x, i, ...)
+        v[i] <- .get_ave_sil_width(diss, clust$cluster)
+      }
+    }
+    else if (method == "wss") {
+      for (i in 1:k.max) {
+        clust <- FUNcluster(x, i, ...)
+        v[i] <- .get_withinSS(diss, clust$cluster)
+      }
+    }
+    df <- data.frame(clusters = as.factor(1:k.max), y = v, 
+                     stringsAsFactors = TRUE)
+    ylab <- "Total Within Sum of Square"
+    if (method == "silhouette") 
+      ylab <- "Average silhouette width"
+    p <- ggpubr::ggline(df, x = "clusters", y = "y", group = 1, 
+                        color = linecolor, ylab = ylab, xlab = "Number of clusters k", 
+                        main = "Optimal number of clusters")
+    if (method == "silhouette") 
+      p <- p + geom_vline(xintercept = which.max(v), linetype = 2, 
+                          color = linecolor)
+    return(p)
+  }
+  else if (method == "gap_stat") {
+    extra_args <- list(...)
+    gap_stat <- cluster::clusGap(x, FUNcluster, K.max = k.max, 
+                                 B = nboot, verbose = verbose, ...)
+    if (!is.null(extra_args$maxSE)) 
+      maxSE <- extra_args$maxSE
+    else maxSE <- list(method = "firstSEmax", SE.factor = 1)
+    p <- fviz_gap_stat(gap_stat, linecolor = linecolor, 
+                       maxSE = maxSE)
+    return(p)
+  }
+}
+
+.viz_NbClust <- function (x, print.summary = TRUE, barfill = "steelblue", 
+                          barcolor = "steelblue") {
+  best_nc <- x$Best.nc
+  if (any(class(best_nc) == "numeric") )
+    print(best_nc)
+  else if (any(class(best_nc) == "matrix") ) {
+    best_nc <- as.data.frame(t(best_nc), stringsAsFactors = TRUE)
+    best_nc$Number_clusters <- as.factor(best_nc$Number_clusters)
+    if (print.summary) {
+      ss <- summary(best_nc$Number_clusters)
+      cat("Among all indices: \n===================\n")
+      for (i in 1:length(ss)) {
+        cat("*", ss[i], "proposed ", names(ss)[i], 
+            "as the best number of clusters\n")
+      }
+      cat("\nConclusion\n=========================\n")
+      cat("* According to the majority rule, the best number of clusters is ", 
+          names(which.max(ss)), ".\n\n")
+    }
+    df <- data.frame(Number_clusters = names(ss), freq = ss, 
+                     stringsAsFactors = TRUE)
+    p <- ggpubr::ggbarplot(df, x = "Number_clusters", 
+                           y = "freq", fill = barfill, color = barcolor) + 
+      labs(x = "Number of clusters k", y = "Frequency among all indices", 
+           title = paste0("Optimal number of clusters - k = ", 
+                          names(which.max(ss))))
+    return(p)
+  }
+}
+
+# assign them to the factoextra namespace
+environment(fviz_nbclust) <- asNamespace("factoextra")
+assignInNamespace("fviz_nbclust",fviz_nbclust,"factoextra")
+environment(.viz_NbClust) <- asNamespace("factoextra")
+assignInNamespace(".viz_NbClust",.viz_NbClust,"factoextra")
+
+extract_numeric <- function(table) {
+  M <- data[,unlist(lapply(table, is.numeric))]
+  M <- subset(M, select = -id)
+  
+  return(M)
+}
+
+cluster_builder <- function(table, clusters) {
+  nb <- NbClust(as.data.frame(table), distance = "euclidean", min.nc = 2,
+                max.nc = 9, method = "complete", index = "all")
+
+  nb$All.index
+  nb$Best.nc
+  nb$Best.partition  
+  
+  summ_1 <- kmeans(table, centers = clusters)
+  fviz_cluster(summ_1, data = table, ellipse = TRUE, ellipse.type = "norm")
+}
+
+hsclust_builder <- function(table_dist, k) {
+  clust_prog <- hclust(table_dist, "ward.D")
+  clust_prog
+
+  plot(clust_prog)
+  rect.hclust(clust_prog, k, border="#CC2255")
+  return(clust_prog)
+}
+
+heatmap_builder <- function(table) {
+  data3 <- as.matrix(table)
+  hv3 <- heatmap.2(data3)
+  
+  dist.prog1 <- function(x) dist(x, method="maximum")
+  clust.prog1 <- function(x) hclust(x, "ward.D")
+
+  hv3 <- heatmap.2(data3, distfun=dist.prog1, hclustfun=clust.prog1)
+}
+
+cor_builder <- function(table_dist, clust_prog) {
+  d2 <- cophenetic(clust_prog)
+  cor(table_dist, d2)
+}
+
+# ==============================================
+
+CLUSTERS_NUM <- 4
+data_numeric <- extract_numeric(data)
+
+data_scaled <- scale(data_numeric, center = TRUE, scale = TRUE)
+table_dist <- dist(data_scaled)
+
+# Дендограмма
+par(mfrow = c(1, 1))
+clust <- hsclust_builder(table_dist, CLUSTERS_NUM)
+
+# Дендограмма с тепловой картой
+heatmap_builder(data_scaled)
+
+# Кофенетическая корреляция
+cor_builder(table_dist, clust)
+
+# Оценка качества кластеризации
+cluster_builder(data_scaled, CLUSTERS_NUM)
+
+
+
