@@ -137,9 +137,9 @@ extract_numeric <- function(table) {
   return(M)
 }
 
-cluster_builder <- function(table, clusters) {
-  nb <- NbClust(as.data.frame(table), distance = "euclidean", min.nc = 2,
-                max.nc = 9, method = "complete", index = "all")
+cluster_builder <- function(table, clusters, distance, method) {
+  nb <- NbClust(as.data.frame(table), distance = distance, min.nc = 2,
+                max.nc = 9, method = method, index = "all")
 
   nb$All.index
   nb$Best.nc
@@ -149,8 +149,8 @@ cluster_builder <- function(table, clusters) {
   fviz_cluster(summ_1, data = table, ellipse = TRUE, ellipse.type = "norm")
 }
 
-hsclust_builder <- function(table_dist, k) {
-  clust_prog <- hclust(table_dist, "ward.D")
+hsclust_builder <- function(table_dist, k, distance) {
+  clust_prog <- hclust(table_dist, distance)
   clust_prog
 
   plot(clust_prog)
@@ -158,12 +158,12 @@ hsclust_builder <- function(table_dist, k) {
   return(clust_prog)
 }
 
-heatmap_builder <- function(table) {
+heatmap_builder <- function(table, method, distance) {
   data3 <- as.matrix(table)
   hv3 <- heatmap.2(data3)
   
-  dist.prog1 <- function(x) dist(x, method="maximum")
-  clust.prog1 <- function(x) hclust(x, "ward.D")
+  dist.prog1 <- function(x) dist(x, method=method)
+  clust.prog1 <- function(x) hclust(x, distance)
 
   hv3 <- heatmap.2(data3, distfun=dist.prog1, hclustfun=clust.prog1)
 }
@@ -171,6 +171,25 @@ heatmap_builder <- function(table) {
 cor_builder <- function(table_dist, clust_prog) {
   d2 <- cophenetic(clust_prog)
   cor(table_dist, d2)
+}
+
+wss_builder <- function(table) {
+  wss <- (nrow(table) - 1) * sum(apply(table, 2, var))
+  for (i in 2:15)
+    wss[i] <- kmeans(table, centers=i)$tot.withinss
+
+  plot(1:15, wss, type="b", xlab="Number of Clusters",
+       ylab="Within groups sum of squares")
+
+  # Построение графика зависимости суммы квадратов отклонений между кластерами от
+  # числа кластеров
+
+  wss <- 0
+  for (i in 2:15)
+    wss[i] <- kmeans(table, centers=i)$betweenss
+
+  plot(1:15, wss, type="b", xlab="Number of Clusters",
+       ylab="Betweenss groups sum of squares")
 }
 
 # ==============================================
@@ -183,16 +202,16 @@ table_dist <- dist(data_scaled)
 
 # Дендограмма
 par(mfrow = c(1, 1))
-clust <- hsclust_builder(table_dist, CLUSTERS_NUM)
+clust <- hsclust_builder(table_dist, CLUSTERS_NUM, "single")
 
 # Дендограмма с тепловой картой
-heatmap_builder(data_scaled)
+heatmap_builder(data_scaled, "maximum", "single")
 
 # Кофенетическая корреляция
 cor_builder(table_dist, clust)
 
 # Оценка качества кластеризации
-cluster_builder(data_scaled, CLUSTERS_NUM)
+cluster_builder(data_scaled, CLUSTERS_NUM, "euclidean", "complete")
 
 
-
+wss_builder(data_scaled)
